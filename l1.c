@@ -857,8 +857,6 @@ void userfunction(struct useraccount *p)
             break;
     }
 }
-
-
 void readuserfile()
 {
     struct useraccount *p;
