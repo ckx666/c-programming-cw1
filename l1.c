@@ -28,7 +28,6 @@ struct Node* createHead()
 {
     //动态申请内存
     struct Node* headNode = (struct Node*)malloc(sizeof(struct Node));
-    //变量规则 使用前必须初始化
     headNode->next=NULL;
     return headNode;
 }
