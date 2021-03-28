@@ -28,6 +28,7 @@ struct Node* createHead()
 {
     //动态申请内存
     struct Node* headNode = (struct Node*)malloc(sizeof(struct Node));
+    //变量规则 使用前必须初始化
     headNode->next=NULL;
     return headNode;
 }
@@ -104,6 +105,88 @@ struct Node* searchByName(struct Node* headNode, char *bookName)
     }
     return posNode;
 }
+struct Node* find_book_by_title (const char *title){
+    struct Node* posNode = listbook->next;
+    while(posNode!=NULL && strcmp(posNode->data.Title, title))
+    {
+        posNode = posNode->next;
+    }
+    return posNode;
+}
+struct Node*  find_book_by_author (const char *author){
+    struct Node* pMove = listbook->next;
+    int i = 0;
+    printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+    while(pMove!=NULL)
+    {
+        if(strcmp(pMove->data.Athors, author)==0)
+        {
+
+            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+            i++;
+        }
+        pMove=pMove->next;
+    }
+    if(i==0)
+    {
+        printf("\nNot found!\n");
+    }
+
+}
+struct Node* find_book_by_year (unsigned int year)
+{
+    struct Node* pMove = listbook->next;
+    int i = 0;
+    int year1=0;
+
+//	printf("Please enter year：");
+//	scanf("%d", &year1);
+    printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+    while(pMove!=NULL)
+    {
+        if(pMove->data.year==year)
+        {
+
+            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+            i++;
+        }
+        pMove=pMove->next;
+    }
+    if(i==0)
+    {
+        printf("\nNot found!\n");
+    }
+}
+void printList1(struct Node* headNode)
+{
+    int year;
+    int i=0;
+    struct Node* pMove = headNode->next;
+    printf("Please enter year：");
+    scanf("%d", &year);
+    printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+    while(pMove!=NULL)
+    {
+        if(pMove->data.year==year)
+        {
+
+            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+            i++;
+        }
+        pMove=pMove->next;
+    }
+    if(i==0)
+    {
+        printf("\nNot found!\n");
+    }
+}
+
+
+
+
+
+
+
 struct Node* searchByAthor(struct Node* headNode, char *authorName)
 {
     struct Node* posNode = headNode->next;
@@ -140,29 +223,29 @@ void printList(struct Node* headNode)
         pMove=pMove->next;
     }
 }
-void printList1(struct Node* headNode)
-{
-    int year;
-    int i=0;
-    struct Node* pMove = headNode->next;
-    printf("Please enter year：");
-    scanf("%d", &year);
-    printf("ID\tTitle\tAuthors\tyear\tcopies\n");
-    while(pMove!=NULL)
-    {
-        if(pMove->data.year==year)
-        {
-
-            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
-            i++;
-        }
-        pMove=pMove->next;
-    }
-    if(i==0)
-    {
-        printf("\nNot found!\n");
-    }
-}
+//void printList1(struct Node* headNode)
+//{
+//	int year;
+//	int i=0;
+//	struct Node* pMove = headNode->next;
+//	printf("Please enter year：");
+//	scanf("%d", &year);
+//	printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+//	while(pMove!=NULL)
+//	{
+//		if(pMove->data.year==year)
+//		{
+//
+//			printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+//			i++;
+//		}
+//		pMove=pMove->next;
+//	}
+//	if(i==0)
+//				{
+//					printf("\nNot found!\n");
+//				}
+//}
 //void searchByYear(struct Node* headNode, int year)
 //{
 //	struct Node* pMove = headNode->next;
@@ -245,6 +328,17 @@ void saveInfoToFile(const char* fileName, struct Node* headNode)
     fclose(fp);
 }
 //
+int store_books(FILE *file){
+    file = fopen("bookinfo1.txt","w");
+    struct Node* pMove =listbook->next;
+    while(pMove!=NULL)
+    {
+        fprintf(file,"%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+        pMove=pMove->next;
+    }
+    fclose(file);
+    return 0;
+}
 //读操作
 void readInfoFromFile(const char* fileName, struct Node* headNode)
 {
@@ -260,7 +354,21 @@ void readInfoFromFile(const char* fileName, struct Node* headNode)
     }
     fclose(fp);
 }
+int load_books(FILE *file){
 
+    file =fopen("bookinfo1.txt", "r");//第一次打开不存在
+    if(file==NULL)
+    {//如果不存在就创建
+        file=fopen("bookinfo1.txt","w+");
+    }
+    struct bookInfo tempData;
+    while (fscanf(file,"%d\t%s\t%s\t%d\t%d\n", &tempData.ID, tempData.Title, tempData.Athors, &tempData.year, &tempData.copies)!=EOF)
+    {
+        insertNodeByHead(listbook, tempData);
+    }
+    fclose(file);
+    return 0;
+}
 void menu()
 {
     printf("\nPlease choose an option\n");
@@ -493,14 +601,22 @@ void librarianview()
                         }
                         if(n==0)
                         {
-
+                            FILE *book1;
                             tempBook.copies = atoi(copy);
 //						cop_ies[tempBook.ID]=tempBook.copies;
                             tempBook.in_copies=tempBook.copies;
 //						insertNodeByHead(listbook,tempBook);
                             if(add_book(tempBook)==0){
-                                saveInfoToFile("bookinfo1.txt",listbook);
-                                printf("Add book successfully!\n");
+                                if(store_books(book1)==0)
+                                {
+//								saveInfoToFile("bookinfo1.txt",listbook);
+                                    printf("Add book successfully!\n");
+                                }
+                                else
+                                {
+                                    printf("Add book unsuccessfully!\n");
+                                }
+
                             }
                             else
                             {
@@ -564,14 +680,26 @@ void librarianview()
 
                 if(result->data.copies!=result->data.in_copies)
                 {
-                    printf("Remove unsuccessfully! Because it is on loan!\n");
+                    printf("Can not Remove! Because it is on loan!\n");
                 }
                 else
                 {
 //				deleteNodeName(listbook, tempBook.Title);
+                    FILE *book2;
                     if(remove_book(tempBook)==0){
-                        saveInfoToFile("bookinfo1.txt",listbook);
-                        printf("Remove book successfully!\n");
+                        if(store_books(book2)==0)
+                        {
+//								saveInfoToFile("bookinfo1.txt",listbook);
+//								printf("Add book successfully!\n");
+                            printf("Remove book successfully!\n");
+                        }
+                        else
+                        {
+                            printf("Add book unsuccessfully!\n");
+                        }
+
+//							saveInfoToFile("bookinfo1.txt",listbook);
+
                     }
                     else
                     {
@@ -669,6 +797,7 @@ void cmd()
 void searchbook()
 {
     int end =0;
+    int j;
     struct bookInfo tempBook;//临时的变量存储书籍信息
     struct Node* result=NULL;//查找结果
     printf("\nPlease choose an option\n");
@@ -686,7 +815,8 @@ void searchbook()
         case 1:
             printf("Please enter title：");
             scanf("%s", tempBook.Title);
-            result=searchByName(listbook,tempBook.Title);
+            result=find_book_by_title(tempBook.Title);
+//			result=searchByName(listbook,tempBook.Title);
             if(result==NULL)
             {
                 printf("Not found!");
@@ -708,20 +838,24 @@ void searchbook()
         case 2:
             printf("Please enter author：");
             scanf("%s", tempBook.Athors);
-            result=searchByAthor(listbook,tempBook.Athors);
-            if(result==NULL)
-            {
-                printf("Not found!");
-                end=1;
-            }
-            else
-            {
-                printf("ID\tTitle\tAuthors\tyear\tcopies\n");
-                printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
-            }
+            find_book_by_author(tempBook.Athors);
+//			result=searchByAthor(listbook,tempBook.Athors);
+//			if(result==NULL)
+//			{
+//				printf("Not found!");
+//				end=1;
+//			}
+//			else
+//			{
+//				printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
+//			}
             break;
         case 3:
-            printList1(listbook);
+//			printList1(listbook);
+            printf("Please enter year：");
+            scanf("%i", &tempBook.year);
+            find_book_by_year(tempBook.year);
 //			printList(listbook);
 //			if(result==NULL)
 //			{
@@ -828,7 +962,20 @@ void userfunction(struct useraccount *p)
                 }
                 break;
             case 3:
-                printList1(listbook);
+//			printf("查找书籍\n");
+//			printf("输入查找的书名：");
+//			scanf("%s", tempBook.Title);
+//			result=searchByName(listbook,tempBook.Title);
+//			if(result==NULL)
+//			{
+//				printf("未找到");
+//			}
+//			else
+//			{
+//					printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
+//			}
+                searchbook();
                 break;
             case 4:
                 printList(listbook);
@@ -843,6 +990,8 @@ void userfunction(struct useraccount *p)
             break;
     }
 }
+
+
 void readuserfile()
 {
     struct useraccount *p;
@@ -867,8 +1016,13 @@ void readuserfile()
 int main()
 {
     FILE *fp;
+    FILE *book;
     listbook= createHead();
-    readInfoFromFile("bookinfo1.txt",listbook);
+//	readInfoFromFile("bookinfo1.txt",listbook);
+    if(load_books(book)!=0)
+    {
+        printf("load_books fail!\n");
+    }
     head = (struct useraccount *)malloc(sizeof(struct useraccount));
     end = head;
     bookend = bookhead;
@@ -884,5 +1038,3 @@ int main()
     }
     return 0;
 }
-
-
