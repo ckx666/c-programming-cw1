@@ -15,6 +15,7 @@ struct bookInfo
     char Athors[100];
     int year;
     int copies;
+    int in_copies;
 };
 struct Node
 {
@@ -53,12 +54,8 @@ char librarianpassword[10]="1";
 struct useraccount *head = NULL, *end = NULL;
 struct bookstruct  *bookhead = NULL, *bookend = NULL;
 int usercount, bookcount;
-
-
-int registermenu();
-int loginmenu();
-
-
+void userregister();
+void userlogin();
 void menu();
 void cmd();
 void readuserfile();
@@ -275,15 +272,14 @@ void menu()
     printf("5) Quit\n");
     printf(" Option: ");
 }
-int registermenu()/*Register users. If the username has been used it will print Sorry, registration unsuccessful,
-the username you entered already exists and can type an another name or password;
-else print Registered library account successfully!*/
+void userregister()
 {
     char username[50];
     char userpassword[50];
-    struct useraccount *pc;
-    pc = (struct useraccount *)malloc(sizeof(struct useraccount));
+    struct useraccount *p;
+    p = (struct useraccount *)malloc(sizeof(struct useraccount));
     FILE *fp;
+
     printf("Please enter a username: ");
     while (gets(username))
     {
@@ -305,7 +301,7 @@ else print Registered library account successfully!*/
             printf("Please enter a username: ");
         }
     }
-    strcpy(pc->username, username);
+    strcpy(p->username, username);
     printf("Please enter a password: ");
     while (gets(userpassword))
     {
@@ -314,92 +310,93 @@ else print Registered library account successfully!*/
         else
             printf("too complex");
     }
-    strcpy(pc->userpassword, userpassword);
-    pc->bookcount = 0;
-    end->next = pc;
-    end = pc;
+    strcpy(p->userpassword, userpassword);
+    p->bookcount = 0;
+    end->next = p;
+    end = p;
     end->next = NULL;
 //	}
 //	usercount++;
     fp = fopen("user", "w");
-    pc = head;
-    while (pc != NULL)
+    p = head;
+    while (p != NULL)
     {
-        fwrite(pc, sizeof(struct useraccount), 1, fp);
-        pc = pc->next;
+        fwrite(p, sizeof(struct useraccount), 1, fp);
+        p = p->next;
     }
     fclose(fp);
-    return 1;
-//	printf("Registered library account successfully!\n");
+    printf("Registered library account successfully!\n");
 
 }
 
-int judge(char *name)/*This is to judge whether the username exists.*/
+int judge(char *name)
 {
-    struct useraccount *pc;
-    pc = head;
-    while (pc != NULL && usercount != 0)
+    struct useraccount *p;
+    p = head;
+    while (p != NULL && usercount != 0)
     {
-        if (strcmp(name, pc->username) == 0)
+        if (strcmp(name, p->username) == 0)
             return 1;
-        pc= pc->next;
+        p = p->next;
     }
     return 0;
 }
 
-int loginmenu()/*User login: Allow registered users to
-login by their username
-and password then display the
- usermenu. Feedback
-message to the user for a
-wrong username or password. */
+void userlogin()
 {
-    struct useraccount *pc;
+    struct useraccount *p;
     char username[50];
     char str[]=".txt";
     char userpassword[50];
+    int exist = 0;
+
     FILE *fp;
-    pc = head;
+    p = head;
     printf("Please enter your username: ");
     scanf("%s", username);
+//	gets(username);
     printf("Please enter your password: ");
     scanf("%s", userpassword);
-    while (pc != NULL)
+//	gets(userpassword);
+
+    while (p != NULL)
     {
-        if (strcmp(username, librarianname) == 0)/*check librarian account*/
+        if (strcmp(username, librarianname) == 0)
         {
+            exist = 1;
             while (strcmp(userpassword, librarianpassword) != 0)
             {
                 printf("Password is wrong! Please enter again!\n");
                 printf("Please enter your password again: ");
+//				gets(librarianpassword);
                 scanf("%s", librarianpassword);
             }
-            printf("\n(logged in as: librarian)");
-            librarianview(pc);/*go to librarian menu*/
-            return 1;
+            printf("\n(logged in as: librarian)\n");
+            librarianview(p);
         }
-        if (strcmp(pc->username, username) == 0)
+        if (strcmp(p->username, username) == 0)
         {
-            while(strcmp(pc->userpassword, userpassword) != 0)
+            exist = 1;
+            while(strcmp(p->userpassword, userpassword) != 0)
             {
                 printf("Password is wrong! Please enter again!\n");
                 printf("Please enter your password again: ");
                 scanf("%s", userpassword);
+//				gets(userpassword);
             }
-            printf("\n(logged in as: %s)\n", pc->username);
-            strcpy(userName,pc->username);/*creat the name for userfile*/
+            printf("\n(logged in as: %s)\n", p->username);
+            strcpy(userName,p->username);
             strcat(userName,"");
             strcat(userName,str);
 //			saveInfoToFile(userName,listbook);
-            userfunction(pc);/*go to user menu*/
-            return 1;
+            userfunction(p);
         }
-        pc = pc->next;
+        p = p->next;
     }
-//	if (exist==0)
-//	{
-//		printf("Username is not existing, please register first!\n");
-//	}
+    if (exist==0)
+    {
+        printf("Username is not existing, please register first!\n");
+    }
 }
 
 void librarianview()
@@ -499,11 +496,18 @@ void librarianview()
                         {
 
                             tempBook.copies = atoi(copy);
-                            cop_ies[tempBook.ID]=tempBook.copies;
-                            insertNodeByHead(listbook,tempBook);
+//						cop_ies[tempBook.ID]=tempBook.copies;
+                            tempBook.in_copies=tempBook.copies;
+//						insertNodeByHead(listbook,tempBook);
+                            if(add_book(tempBook)==0){
+                                saveInfoToFile("bookinfo1.txt",listbook);
+                                printf("Add book successfully!\n");
+                            }
+                            else
+                            {
+                                printf("Add book unsuccessfully!\n");
+                            }
 
-                            saveInfoToFile("bookinfo1.txt",listbook);
-                            printf("Add book successfully!\n");
                         }
                         else
                         {
@@ -542,7 +546,7 @@ void librarianview()
 
                         tempBook.copies = atoi(copy);
                         result->data.copies+=tempBook.copies;
-                        cop_ies[tempBook.ID]=tempBook.copies;
+                        tempBook.in_copies=tempBook.copies;
                         saveInfoToFile("bookinfo1.txt",listbook);
                         printf("Add book successfully!\n");
                     }
@@ -559,16 +563,22 @@ void librarianview()
                 scanf("%s",tempBook.Title);
                 result=searchByName(listbook,tempBook.Title);
 
-//			if(result->data.copies!=cop_ies[result->data.ID])
-//			{
-//				printf("Remove unsuccessfully! Because it is on loan!\n");
-//			}
-//			else
-//			{
-                deleteNodeName(listbook, tempBook.Title);
-                saveInfoToFile("bookinfo1.txt",listbook);
-//				printf("Remove book successfully! ");
-//			}
+                if(result->data.copies!=result->data.in_copies)
+                {
+                    printf("Remove unsuccessfully! Because it is on loan!\n");
+                }
+                else
+                {
+//				deleteNodeName(listbook, tempBook.Title);
+                    if(remove_book(tempBook)==0){
+                        saveInfoToFile("bookinfo1.txt",listbook);
+                        printf("Remove book successfully!\n");
+                    }
+                    else
+                    {
+                        printf("Remove book unsuccessfully! ");
+                    }
+                }
 
                 break;
             case 3:
@@ -601,7 +611,16 @@ void librarianview()
             break;
     }
 }
-
+int remove_book(struct bookInfo data)
+{
+    deleteNodeName(listbook, data.Title);
+    return 0;
+}
+int add_book(struct bookInfo data)
+{
+    insertNodeByHead(listbook, data);
+    return 0;
+}
 
 void cmd()
 {
@@ -613,17 +632,10 @@ void cmd()
     switch (option)
     {
         case 1:
-            if(registermenu()==1)
-            {
-                printf("Registered library account successfully!\n");
-            }
+            userregister();
             break;
         case 2:
-            if(loginmenu()!=1)
-            {
-                printf("Username is not existing, please register first!\n");
-            }
-
+            userlogin();
             break;
         case 3:
 //			printf("查找书籍\n");
@@ -817,6 +829,19 @@ void userfunction(struct useraccount *p)
                 }
                 break;
             case 3:
+//			printf("查找书籍\n");
+//			printf("输入查找的书名：");
+//			scanf("%s", tempBook.Title);
+//			result=searchByName(listbook,tempBook.Title);
+//			if(result==NULL)
+//			{
+//				printf("未找到");
+//			}
+//			else
+//			{
+//					printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
+//			}
                 printList1(listbook);
                 break;
             case 4:
@@ -875,4 +900,5 @@ int main()
     }
     return 0;
 }
+
 
