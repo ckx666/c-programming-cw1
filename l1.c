@@ -53,8 +53,12 @@ char librarianpassword[10]="1";
 struct useraccount *head = NULL, *end = NULL;
 struct bookstruct  *bookhead = NULL, *bookend = NULL;
 int usercount, bookcount;
-void userregister();
-void userlogin();
+
+
+int registermenu();
+int loginmenu();
+
+
 void menu();
 void cmd();
 void readuserfile();
@@ -271,14 +275,15 @@ void menu()
     printf("5) Quit\n");
     printf(" Option: ");
 }
-void userregister()
+int registermenu()/*Register users. If the username has been used it will print Sorry, registration unsuccessful,
+the username you entered already exists and can type an another name or password;
+else print Registered library account successfully!*/
 {
     char username[50];
     char userpassword[50];
-    struct useraccount *p;
-    p = (struct useraccount *)malloc(sizeof(struct useraccount));
+    struct useraccount *pc;
+    pc = (struct useraccount *)malloc(sizeof(struct useraccount));
     FILE *fp;
-
     printf("Please enter a username: ");
     while (gets(username))
     {
@@ -287,7 +292,7 @@ void userregister()
             printf("Sorry, registration unsuccessful, the username you entered already exists.\n");
             printf("Please enter a username: ");
         }
-        else if (judge(username)==0)
+        else if (judge(username))
         {
             printf("Sorry, registration unsuccessful, the username you entered already exists.\n");
             printf("Please enter a username: ");
@@ -300,7 +305,7 @@ void userregister()
             printf("Please enter a username: ");
         }
     }
-    strcpy(p->username, username);
+    strcpy(pc->username, username);
     printf("Please enter a password: ");
     while (gets(userpassword))
     {
@@ -309,93 +314,92 @@ void userregister()
         else
             printf("too complex");
     }
-    strcpy(p->userpassword, userpassword);
-    p->bookcount = 0;
-    end->next = p;
-    end = p;
+    strcpy(pc->userpassword, userpassword);
+    pc->bookcount = 0;
+    end->next = pc;
+    end = pc;
     end->next = NULL;
 //	}
 //	usercount++;
     fp = fopen("user", "w");
-    p = head;
-    while (p != NULL)
+    pc = head;
+    while (pc != NULL)
     {
-        fwrite(p, sizeof(struct useraccount), 1, fp);
-        p = p->next;
+        fwrite(pc, sizeof(struct useraccount), 1, fp);
+        pc = pc->next;
     }
     fclose(fp);
-    printf("Registered library account successfully!\n");
+    return 1;
+//	printf("Registered library account successfully!\n");
 
 }
 
-int judge(char *name)
+int judge(char *name)/*This is to judge whether the username exists.*/
 {
-    struct useraccount *p;
-    p = head;
-    while (p != NULL && usercount != 0)
+    struct useraccount *pc;
+    pc = head;
+    while (pc != NULL && usercount != 0)
     {
-        if (strcmp(name, p->username) == 0)
+        if (strcmp(name, pc->username) == 0)
             return 1;
-        p = p->next;
+        pc= pc->next;
     }
     return 0;
 }
 
-void userlogin()
+int loginmenu()/*User login: Allow registered users to
+login by their username
+and password then display the
+ usermenu. Feedback
+message to the user for a
+wrong username or password. */
 {
-    struct useraccount *p;
+    struct useraccount *pc;
     char username[50];
     char str[]=".txt";
     char userpassword[50];
-    int exist = 0;
-
     FILE *fp;
-    p = head;
+    pc = head;
     printf("Please enter your username: ");
     scanf("%s", username);
-//	gets(username);
     printf("Please enter your password: ");
     scanf("%s", userpassword);
-//	gets(userpassword);
-
-    while (p != NULL)
+    while (pc != NULL)
     {
-        if (strcmp(username, librarianname) == 0)
+        if (strcmp(username, librarianname) == 0)/*check librarian account*/
         {
-            exist = 1;
             while (strcmp(userpassword, librarianpassword) != 0)
             {
                 printf("Password is wrong! Please enter again!\n");
                 printf("Please enter your password again: ");
-//				gets(librarianpassword);
                 scanf("%s", librarianpassword);
             }
-            printf("\n(logged in as: librarian)\n");
-            librarianview(p);
+            printf("\n(logged in as: librarian)");
+            librarianview(pc);/*go to librarian menu*/
+            return 1;
         }
-        if (strcmp(p->username, username) == 0)
+        if (strcmp(pc->username, username) == 0)
         {
-            exist = 1;
-            while(strcmp(p->userpassword, userpassword) != 0)
+            while(strcmp(pc->userpassword, userpassword) != 0)
             {
                 printf("Password is wrong! Please enter again!\n");
                 printf("Please enter your password again: ");
                 scanf("%s", userpassword);
-//				gets(userpassword);
             }
-            printf("\n(logged in as: %s)\n", p->username);
-            strcpy(userName,p->username);
+            printf("\n(logged in as: %s)\n", pc->username);
+            strcpy(userName,pc->username);/*creat the name for userfile*/
             strcat(userName,"");
             strcat(userName,str);
 //			saveInfoToFile(userName,listbook);
-            userfunction(p);
+            userfunction(pc);/*go to user menu*/
+            return 1;
         }
-        p = p->next;
+        pc = pc->next;
     }
-    if (exist==0)
-    {
-        printf("Username is not existing, please register first!\n");
-    }
+//	if (exist==0)
+//	{
+//		printf("Username is not existing, please register first!\n");
+//	}
 }
 
 void librarianview()
@@ -609,10 +613,17 @@ void cmd()
     switch (option)
     {
         case 1:
-            userregister();
+            if(registermenu()==1)
+            {
+                printf("Registered library account successfully!\n");
+            }
             break;
         case 2:
-            userlogin();
+            if(loginmenu()!=1)
+            {
+                printf("Username is not existing, please register first!\n");
+            }
+
             break;
         case 3:
 //			printf("查找书籍\n");
@@ -877,5 +888,4 @@ int main()
     }
     return 0;
 }
-
 
