@@ -6,36 +6,42 @@
 #include<stdlib.h>
 #include<math.h>
 #include<ctype.h>
+//#include"book_management.h"
 char userName[100];
 int cop_ies[100];
-struct bookInfo
+typedef struct _Book
 {
-    int ID;
+    int id;
     char Title[100];
-    char Athors[100];
+//		char *Title; //book Title
+//		char *authors; //comma separated list of authors
+
+    char author[100];
     int year;
     int copies;
     int in_copies;
-};
-struct Node
+}Book;
+
+
+typedef struct _BookArray
 {
-    struct bookInfo data;
-    struct Node *next;
-};
-struct Node* listbook = NULL;
+    Book data;
+    struct _BookArray *next;
+}BookArray;
+BookArray* listbook = NULL;
 //创建表头：表头就是一个结构体标量
-struct Node* createHead()
+BookArray* createHead()
 {
     //动态申请内存
-    struct Node* headNode = (struct Node*)malloc(sizeof(struct Node));
+    BookArray* headNode = (BookArray*)malloc(sizeof(BookArray));
     //变量规则 使用前必须初始化
     headNode->next=NULL;
     return headNode;
 }
-struct Node* createNode(struct bookInfo data)
+BookArray* createNode(Book data)
 {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data=data;
+    BookArray* newNode = (BookArray*)malloc(sizeof(BookArray));
+    newNode->data= data;
     newNode->next=NULL;
     return newNode;
 }
@@ -64,19 +70,19 @@ void userfunction(struct useraccount *p);
 void librarianview();
 void writefile(int flag);
 void searchbook();
-void insertNodeByHead(struct Node* headNode, struct bookInfo data)
+void insertNodeByHead(BookArray* headNode, Book data)
 {
-    struct Node* newNode = createNode(data);
+    BookArray* newNode = createNode(data);
     //必须先连接，再断开
     newNode->next= headNode->next;
     headNode->next=newNode;
 }
 //
 //指定位置删除
-void deleteNodeByName(struct Node* headNode, char *bookName)
+void deleteNodeByName(BookArray* headNode, char *bookName)
 {
-    struct Node* posLeftNode= headNode;
-    struct Node* posNode = headNode->next;
+    BookArray* posLeftNode= headNode;
+    BookArray* posNode = headNode->next;
     //书籍名字是字符串，字符串比较函数
     while(posNode!=NULL && strcmp(posNode->data.Title,bookName))
     {
@@ -96,33 +102,33 @@ void deleteNodeByName(struct Node* headNode, char *bookName)
     }
 }
 //
-struct Node* searchByName(struct Node* headNode, char *bookName)
+BookArray* searchByName(BookArray* headNode, char *bookName)
 {
-    struct Node* posNode = headNode->next;
+    BookArray* posNode = headNode->next;
     while(posNode!=NULL && strcmp(posNode->data.Title,bookName))
     {
         posNode = posNode->next;
     }
     return posNode;
 }
-struct Node* find_book_by_title (const char *title){
-    struct Node* posNode = listbook->next;
-    while(posNode!=NULL && strcmp(posNode->data.Title, title))
+BookArray* find_book_by_title (const char *Title){
+    BookArray* posNode = listbook->next;
+    while(posNode!=NULL && strcmp(posNode->data.Title, Title))
     {
         posNode = posNode->next;
     }
     return posNode;
 }
-struct Node*  find_book_by_author (const char *author){
-    struct Node* pMove = listbook->next;
+BookArray*  find_book_by_author (const char *author){
+    BookArray* pMove = listbook->next;
     int i = 0;
-    printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+    printf("id\tTitle\tAuthors\tyear\tcopies\n");
     while(pMove!=NULL)
     {
-        if(strcmp(pMove->data.Athors, author)==0)
+        if(strcmp(pMove->data.author, author)==0)
         {
 
-            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
             i++;
         }
         pMove=pMove->next;
@@ -133,21 +139,21 @@ struct Node*  find_book_by_author (const char *author){
     }
 
 }
-struct Node* find_book_by_year (unsigned int year)
+BookArray* find_book_by_year (unsigned int year)
 {
-    struct Node* pMove = listbook->next;
+    BookArray* pMove = listbook->next;
     int i = 0;
     int year1=0;
 
 //	printf("Please enter year：");
 //	scanf("%d", &year1);
-    printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+    printf("id\tTitle\tAuthors\tyear\tcopies\n");
     while(pMove!=NULL)
     {
         if(pMove->data.year==year)
         {
 
-            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
             i++;
         }
         pMove=pMove->next;
@@ -157,20 +163,20 @@ struct Node* find_book_by_year (unsigned int year)
         printf("\nNot found!\n");
     }
 }
-void printList1(struct Node* headNode)
+void printList1(BookArray* headNode)
 {
     int year;
     int i=0;
-    struct Node* pMove = headNode->next;
+    BookArray* pMove = headNode->next;
     printf("Please enter year：");
     scanf("%d", &year);
-    printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+    printf("id\tTitle\tAuthors\tyear\tcopies\n");
     while(pMove!=NULL)
     {
         if(pMove->data.year==year)
         {
 
-            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
             i++;
         }
         pMove=pMove->next;
@@ -187,56 +193,56 @@ void printList1(struct Node* headNode)
 
 
 
-struct Node* searchByAthor(struct Node* headNode, char *authorName)
+BookArray* searchByAthor(BookArray* headNode, char *authorName)
 {
-    struct Node* posNode = headNode->next;
-    while(posNode!=NULL && strcmp(posNode->data.Athors,authorName))
+    BookArray* posNode = headNode->next;
+    while(posNode!=NULL && strcmp(posNode->data.author,authorName))
     {
         posNode = posNode->next;
     }
     return posNode;
 }
-//struct Node* searchByYear(struct Node* headNode, char *year)
+//struct BookArray* searchByYear(struct BookArray* headNode, char *year)
 //{
-//	struct Node* posNode = headNode->next;
+//	struct BookArray* posNode = headNode->next;
 //	while(posNode!=NULL)
 //	{
 //				char i;
 //				sprintf(i,"%d",posNode->data.year);
-//				printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
 //				if(strcmp(i, year)==0)
 //				{
-//										printf("%d\t%s\t%s\t%d\t%d\n", posNode->data.ID, posNode->data.Title, posNode->data.Athors, posNode->data.year, posNode->data.copies);
+//										printf("%d\t%s\t%s\t%d\t%d\n", posNode->data.id, posNode->data.Title, posNode->data.author, posNode->data.year, posNode->data.copies);
 //					}
 //
 //		posNode = posNode->next;
 //	}
 //	return;
 //}
-void printList(struct Node* headNode)
+void printList(BookArray* headNode)
 {
-    struct Node* pMove = headNode->next;
-    printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+    BookArray* pMove = headNode->next;
+    printf("id\tTitle\tAuthors\tyear\tcopies\n");
     while(pMove!=NULL)
     {
-        printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+        printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
         pMove=pMove->next;
     }
 }
-//void printList1(struct Node* headNode)
+//void printList1(struct BookArray* headNode)
 //{
 //	int year;
 //	int i=0;
-//	struct Node* pMove = headNode->next;
+//	struct BookArray* pMove = headNode->next;
 //	printf("Please enter year：");
 //	scanf("%d", &year);
-//	printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+//	printf("id\tTitle\tAuthors\tyear\tcopies\n");
 //	while(pMove!=NULL)
 //	{
 //		if(pMove->data.year==year)
 //		{
 //
-//			printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+//			printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
 //			i++;
 //		}
 //		pMove=pMove->next;
@@ -246,15 +252,15 @@ void printList(struct Node* headNode)
 //					printf("\nNot found!\n");
 //				}
 //}
-//void searchByYear(struct Node* headNode, int year)
+//void searchByYear(struct BookArray* headNode, int year)
 //{
-//	struct Node* pMove = headNode->next;
-//	printf("ID\tTitle\tAuthors\tyear\tcopies\n");
+//	struct BookArray* pMove = headNode->next;
+//	printf("id\tTitle\tAuthors\tyear\tcopies\n");
 //	while(pMove!=NULL)
 //	{
 //		if(pMove->data.year == year)
 //		{
-//			printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+//			printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
 //			pMove=pMove->next;
 //		}
 //		else
@@ -267,9 +273,9 @@ void printList(struct Node* headNode)
 
 int Booktotal=0;
 
-int countbooklist(struct Node* headNode)
+int countbooklist(BookArray* headNode)
 {
-    struct Node* pMove = headNode->next;
+    BookArray* pMove = headNode->next;
     while(pMove!=NULL)
     {
         Booktotal++;
@@ -278,11 +284,11 @@ int countbooklist(struct Node* headNode)
     Booktotal++;
     return Booktotal;
 }
-void deleteNodeName(struct Node* headNode, char *bookName)
+void deleteNodeName(BookArray* headNode, char *bookName)
 {
-    struct Node* posLeftNode= headNode;
-    struct Node* posNode = headNode->next;
-    struct Node* result=NULL;//查找结果
+    BookArray* posLeftNode= headNode;
+    BookArray* posNode = headNode->next;
+    BookArray* result=NULL;//查找结果
     result=searchByName(listbook,bookName);
     //书籍名字是字符串，字符串比较函数
     while(posNode!=NULL && strcmp(posNode->data.Title,bookName))
@@ -300,7 +306,7 @@ void deleteNodeName(struct Node* headNode, char *bookName)
 
     else
     {
-        if(result->data.copies!=cop_ies[result->data.ID])
+        if(result->data.copies!=cop_ies[result->data.id])
         {
             printf("Remove unsuccessfully! Because it is on loan!\n");
             return;
@@ -316,13 +322,13 @@ void deleteNodeName(struct Node* headNode, char *bookName)
 }
 //直接文件操作
 //写操做
-void saveInfoToFile(const char* fileName, struct Node* headNode)
+void saveInfoToFile(const char* fileName,BookArray* headNode)
 {
     FILE *fp=fopen(fileName,"w");
-    struct Node* pMove = headNode->next;
+    BookArray* pMove = headNode->next;
     while(pMove!=NULL)
     {
-        fprintf(fp,"%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+        fprintf(fp,"%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
         pMove=pMove->next;
     }
     fclose(fp);
@@ -330,25 +336,25 @@ void saveInfoToFile(const char* fileName, struct Node* headNode)
 //
 int store_books(FILE *file){
     file = fopen("bookinfo1.txt","w");
-    struct Node* pMove =listbook->next;
+    BookArray* pMove =listbook->next;
     while(pMove!=NULL)
     {
-        fprintf(file,"%d\t%s\t%s\t%d\t%d\n", pMove->data.ID, pMove->data.Title, pMove->data.Athors,pMove->data.year,pMove->data.copies);
+        fprintf(file,"%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
         pMove=pMove->next;
     }
     fclose(file);
     return 0;
 }
 //读操作
-void readInfoFromFile(const char* fileName, struct Node* headNode)
+void readInfoFromFile(const char* fileName, BookArray* headNode)
 {
     FILE *fp=fopen(fileName,"r");//第一次打开不存在
     if(fp==NULL)
     {//如果不存在就创建
         fp=fopen(fileName,"w+");
     }
-    struct bookInfo tempData;
-    while (fscanf(fp,"%d\t%s\t%s\t%d\t%d\n", &tempData.ID, tempData.Title, tempData.Athors, &tempData.year, &tempData.copies)!=EOF)
+    Book tempData;
+    while (fscanf(fp,"%d\t%s\t%s\t%d\t%d\n", &tempData.id, tempData.Title, tempData.author, &tempData.year, &tempData.copies)!=EOF)
     {
         insertNodeByHead(listbook, tempData);
     }
@@ -361,8 +367,8 @@ int load_books(FILE *file){
     {//如果不存在就创建
         file=fopen("bookinfo1.txt","w+");
     }
-    struct bookInfo tempData;
-    while (fscanf(file,"%d\t%s\t%s\t%d\t%d\n", &tempData.ID, tempData.Title, tempData.Athors, &tempData.year, &tempData.copies)!=EOF)
+    Book tempData;
+    while (fscanf(file,"%d\t%s\t%s\t%d\t%d\n", &tempData.id, tempData.Title, tempData.author, &tempData.year, &tempData.copies)!=EOF)
     {
         insertNodeByHead(listbook, tempData);
     }
@@ -513,8 +519,8 @@ void librarianview()
     char year[5];
     char copy[10];
     int count=0;
-    struct bookInfo tempBook;//临时的变量存储书籍信息
-    struct Node* result=NULL;//查找结果
+    Book tempBook;//临时的变量存储书籍信息
+    BookArray* result=NULL;//查找结果
 //	Book tempBook;//临时的变量存储书籍信息
 //	BookArray* result=NULL;//查找结果
     char bookname[100];
@@ -536,15 +542,15 @@ void librarianview()
 //			add();
 
 //			count =  + 1;
-                tempBook.ID = countbooklist(listbook);
+                tempBook.id = countbooklist(listbook);
 
-                printf("Enter the title of the book you wish to add: ");
+                printf("Enter the Title of the book you wish to add: ");
 ////			scanf("%s", tempBook.Title);
                 while (gets(bookname))
                 {
                     if (strlen(bookname) > 10)
                     {
-                        printf("too long! Enter the title of the book you wish to add again: ");
+                        printf("too long! Enter the Title of the book you wish to add again: ");
                     }
                     else
                         break;
@@ -564,8 +570,8 @@ void librarianview()
                             break;
                     }
 
-                    strcpy(tempBook.Athors, bookauthor);
-//	//			scanf("%s", tempBook.Athors);
+                    strcpy(tempBook.author, bookauthor);
+//	//			scanf("%s", tempBook.author);
                     printf("Enter the year that the book you wish to add was released: ");
                     gets(year);
                     int i;
@@ -603,7 +609,7 @@ void librarianview()
                         {
                             FILE *book1;
                             tempBook.copies = atoi(copy);
-//						cop_ies[tempBook.ID]=tempBook.copies;
+//						cop_ies[tempBook.id]=tempBook.copies;
                             tempBook.in_copies=tempBook.copies;
 //						insertNodeByHead(listbook,tempBook);
                             if(add_book(tempBook)==0){
@@ -674,7 +680,7 @@ void librarianview()
             case 2:
 //			deletebook();
                 printf("\n");
-                printf("Enter the title of the book you wish to remove:");
+                printf("Enter the Title of the book you wish to remove:");
                 scanf("%s",tempBook.Title);
                 result=searchByName(listbook,tempBook.Title);
 
@@ -719,13 +725,14 @@ void librarianview()
 //			}
 //			else
 //			{
-//				printf("ID\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
+//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
+//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
 //			}
+                searchbook();
                 break;
             case 4:
-                searchbook();
-//			printList(listbook);
+
+                printList(listbook);
                 break;
             case 5:
                 end = 1;
@@ -738,12 +745,12 @@ void librarianview()
             break;
     }
 }
-int remove_book(struct bookInfo data)
+int remove_book(Book data)
 {
     deleteNodeName(listbook, data.Title);
     return 0;
 }
-int add_book(struct bookInfo data)
+int add_book(Book data)
 {
     insertNodeByHead(listbook, data);
     return 0;
@@ -752,8 +759,8 @@ int add_book(struct bookInfo data)
 void cmd()
 {
     int option;
-    struct bookInfo tempBook;//临时的变量存储书籍信息
-    struct Node* result=NULL;//查找结果
+    Book tempBook;//临时的变量存储书籍信息
+    struct BookArray* result=NULL;//查找结果
     scanf("%d", &option);
     getchar();
     switch (option)
@@ -775,8 +782,8 @@ void cmd()
 //			}
 //			else
 //			{
-//				printf("ID\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
+//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
+//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
 //			}
             searchbook();
             break;
@@ -798,10 +805,10 @@ void searchbook()
 {
     int end =0;
     int j;
-    struct bookInfo tempBook;//临时的变量存储书籍信息
-    struct Node* result=NULL;//查找结果
+    Book tempBook;//临时的变量存储书籍信息
+    BookArray* result=NULL;//查找结果
     printf("\nPlease choose an option\n");
-    printf("1) Find books by title\n");
+    printf("1) Find books by Title\n");
     printf("2) Find books by author\n");
     printf("3) Find books by year\n");
     printf("4) Return to previous menu\n");
@@ -813,7 +820,7 @@ void searchbook()
     switch (option)
     {
         case 1:
-            printf("Please enter title：");
+            printf("Please enter Title：");
             scanf("%s", tempBook.Title);
             result=find_book_by_title(tempBook.Title);
 //			result=searchByName(listbook,tempBook.Title);
@@ -831,15 +838,15 @@ void searchbook()
             }
             else
             {
-                printf("ID\tTitle\tAuthors\tyear\tcopies\n");
-                printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
+                printf("id\tTitle\tAuthors\tyear\tcopies\n");
+                printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
             }
             break;
         case 2:
             printf("Please enter author：");
-            scanf("%s", tempBook.Athors);
-            find_book_by_author(tempBook.Athors);
-//			result=searchByAthor(listbook,tempBook.Athors);
+            scanf("%s", tempBook.author);
+            find_book_by_author(tempBook.author);
+//			result=searchByAthor(listbook,tempBook.author);
 //			if(result==NULL)
 //			{
 //				printf("Not found!");
@@ -847,8 +854,8 @@ void searchbook()
 //			}
 //			else
 //			{
-//				printf("ID\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
+//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
+//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
 //			}
             break;
         case 3:
@@ -864,8 +871,8 @@ void searchbook()
 //			}
 //			else
 //			{
-//				printf("ID\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
+//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
+//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
 //			}
             break;
         case 4:
@@ -883,10 +890,10 @@ void userfunction(struct useraccount *p)
 {
     int option;
     int end = 0;
-    struct bookInfo tempBook;//临时的变量存储书籍信息
-    struct Node* result=NULL;//查找结果
-    struct Node* result2=NULL;//查找结果
-    struct Node* user_Name = NULL;
+    Book tempBook;//临时的变量存储书籍信息
+    BookArray* result=NULL;//查找结果
+    BookArray* result2=NULL;//查找结果
+    BookArray* user_Name = NULL;
     user_Name= createHead();
     readInfoFromFile(userName, user_Name);
     while (1)
@@ -921,10 +928,10 @@ void userfunction(struct useraccount *p)
                             result->data.copies--;
                             saveInfoToFile("bookinfo1.txt",listbook);
 //						saveInfoToFile("bookinfo1.txt",listbook);
-                            strcpy(tempBook.Athors,result->data.Athors);
+                            strcpy(tempBook.author,result->data.author);
                             tempBook.year=result->data.year;
                             tempBook.copies=1;
-                            tempBook.ID=result->data.ID;
+                            tempBook.id=result->data.id;
                             insertNodeByHead(user_Name,tempBook);
                             saveInfoToFile(userName,user_Name);
                             printf("You have successfully borrowed the book!\n");
@@ -972,8 +979,8 @@ void userfunction(struct useraccount *p)
 //			}
 //			else
 //			{
-//					printf("ID\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
+//					printf("id\tTitle\tAuthors\tyear\tcopies\n");
+//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
 //			}
                 searchbook();
                 break;
