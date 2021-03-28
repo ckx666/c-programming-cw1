@@ -817,19 +817,6 @@ void userfunction(struct useraccount *p)
                 }
                 break;
             case 3:
-//			printf("查找书籍\n");
-//			printf("输入查找的书名：");
-//			scanf("%s", tempBook.Title);
-//			result=searchByName(listbook,tempBook.Title);
-//			if(result==NULL)
-//			{
-//				printf("未找到");
-//			}
-//			else
-//			{
-//					printf("ID\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.ID, result->data.Title, result->data.Athors, result->data.year, result->data.copies);
-//			}
                 printList1(listbook);
                 break;
             case 4:
