@@ -27,6 +27,7 @@ typedef struct _BookArray
 {
     Book data;
     struct _BookArray *next;
+    unsigned int length;
 }BookArray;
 BookArray* listbook = NULL;
 //创建表头：表头就是一个结构体标量
@@ -63,7 +64,7 @@ int usercount, bookcount;
 
 int registermenu();
 int loginmenu();
-
+int Booktotal=0;
 
 void menu();
 void cmd();
@@ -73,38 +74,32 @@ void userfunction(struct useraccount *p);
 void librarianview();
 void writefile(int flag);
 void searchbook();
-void insertNodeByHead(BookArray* headNode, Book data)
+void insertByHead(BookArray* headNode, Book data)
 {
     BookArray* newNode = createNode(data);
-    //必须先连接，再断开
     newNode->next= headNode->next;
     headNode->next=newNode;
 }
-//
-//指定位置删除
-void deleteNodeByName(BookArray* headNode, char *bookName)
+void deleteByName(BookArray* headNode, char *bookName)
 {
     BookArray* posLeftNode= headNode;
     BookArray* posNode = headNode->next;
-    //书籍名字是字符串，字符串比较函数
     while(posNode!=NULL && strcmp(posNode->data.Title,bookName))
     {
         posLeftNode=posNode;
         posNode=posLeftNode->next;
 
     }
-    //讨论查找结果
+    //search result
     if(posNode==NULL)
         return;
     else
     {
-        printf("删除成功\n");
         posLeftNode->next = posNode->next;
         free(posNode);
         posNode=NULL;
     }
 }
-//
 BookArray* searchByName(BookArray* headNode, char *bookName)
 {
     BookArray* posNode = headNode->next;
@@ -123,79 +118,44 @@ BookArray* find_book_by_title (const char *Title){
     return posNode;
 }
 BookArray*  find_book_by_author (const char *author){
-    BookArray* pMove = listbook->next;
+    BookArray* Movepoint = listbook->next;
     int i = 0;
     printf("id\tTitle\tAuthors\tyear\tcopies\n");
-    while(pMove!=NULL)
+    while(Movepoint!=NULL)//if one author write many books
     {
-        if(strcmp(pMove->data.author, author)==0)
+        if(strcmp(Movepoint->data.author, author)==0)
         {
 
-            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
+            printf("%d\t%s\t%s\t%d\t%d\n", Movepoint->data.id, Movepoint->data.Title, Movepoint->data.author,Movepoint->data.year,Movepoint->data.copies);
             i++;
         }
-        pMove=pMove->next;
+        Movepoint=Movepoint->next;
     }
     if(i==0)
     {
         printf("\nNot found!\n");
     }
-
 }
 BookArray* find_book_by_year (unsigned int year)
 {
-    BookArray* pMove = listbook->next;
+    BookArray* Movepoint = listbook->next;
     int i = 0;
-    int year1=0;
-
-//	printf("Please enter year：");
-//	scanf("%d", &year1);
     printf("id\tTitle\tAuthors\tyear\tcopies\n");
-    while(pMove!=NULL)
+    while(Movepoint!=NULL)
     {
-        if(pMove->data.year==year)
+        if(Movepoint->data.year==year)//if many books have the same year
         {
 
-            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
+            printf("%d\t%s\t%s\t%d\t%d\n", Movepoint->data.id, Movepoint->data.Title, Movepoint->data.author,Movepoint->data.year,Movepoint->data.copies);
             i++;
         }
-        pMove=pMove->next;
+        Movepoint=Movepoint->next;
     }
     if(i==0)
     {
         printf("\nNot found!\n");
     }
 }
-void printList1(BookArray* headNode)
-{
-    int year;
-    int i=0;
-    BookArray* pMove = headNode->next;
-    printf("Please enter year：");
-    scanf("%d", &year);
-    printf("id\tTitle\tAuthors\tyear\tcopies\n");
-    while(pMove!=NULL)
-    {
-        if(pMove->data.year==year)
-        {
-
-            printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
-            i++;
-        }
-        pMove=pMove->next;
-    }
-    if(i==0)
-    {
-        printf("\nNot found!\n");
-    }
-}
-
-
-
-
-
-
-
 BookArray* searchByAthor(BookArray* headNode, char *authorName)
 {
     BookArray* posNode = headNode->next;
@@ -205,24 +165,7 @@ BookArray* searchByAthor(BookArray* headNode, char *authorName)
     }
     return posNode;
 }
-//struct BookArray* searchByYear(struct BookArray* headNode, char *year)
-//{
-//	struct BookArray* posNode = headNode->next;
-//	while(posNode!=NULL)
-//	{
-//				char i;
-//				sprintf(i,"%d",posNode->data.year);
-//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
-//				if(strcmp(i, year)==0)
-//				{
-//										printf("%d\t%s\t%s\t%d\t%d\n", posNode->data.id, posNode->data.Title, posNode->data.author, posNode->data.year, posNode->data.copies);
-//					}
-//
-//		posNode = posNode->next;
-//	}
-//	return;
-//}
-void printList(BookArray* headNode)
+void displaythebook1(BookArray* headNode)
 {
     BookArray* pMove = headNode->next;
     printf("id\tTitle\tAuthors\tyear\tcopies\n");
@@ -232,49 +175,25 @@ void printList(BookArray* headNode)
         pMove=pMove->next;
     }
 }
-//void printList1(struct BookArray* headNode)
-//{
-//	int year;
-//	int i=0;
-//	struct BookArray* pMove = headNode->next;
-//	printf("Please enter year：");
-//	scanf("%d", &year);
-//	printf("id\tTitle\tAuthors\tyear\tcopies\n");
-//	while(pMove!=NULL)
-//	{
-//		if(pMove->data.year==year)
-//		{
-//
-//			printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
-//			i++;
-//		}
-//		pMove=pMove->next;
-//	}
-//	if(i==0)
-//				{
-//					printf("\nNot found!\n");
-//				}
-//}
-//void searchByYear(struct BookArray* headNode, int year)
-//{
-//	struct BookArray* pMove = headNode->next;
-//	printf("id\tTitle\tAuthors\tyear\tcopies\n");
-//	while(pMove!=NULL)
-//	{
-//		if(pMove->data.year == year)
-//		{
-//			printf("%d\t%s\t%s\t%d\t%d\n", pMove->data.id, pMove->data.Title, pMove->data.author,pMove->data.year,pMove->data.copies);
-//			pMove=pMove->next;
-//		}
-//		else
-//		{
-//			pMove=pMove->next;
-//		}
-//
-//	}
-//}
-
-int Booktotal=0;
+void displaythebook(BookArray *headNode)// arrange the order
+{
+    BookArray* p= headNode->next;
+    BookArray* q = headNode->next;
+    for (p ;p!=NULL;p=p->next)
+    {
+        for (q;q->next!=NULL;q=q->next)
+        {
+            if (q->data.id < q->next->data.id)
+            {
+                //交换值
+                Book tempData=q->data;
+                q->data=q->next->data;
+                q->next->data=tempData;
+            }
+        }
+    }
+    displaythebook1(headNode);
+}
 
 int countbooklist(BookArray* headNode)
 {
@@ -287,45 +206,10 @@ int countbooklist(BookArray* headNode)
     Booktotal++;
     return Booktotal;
 }
-void deleteNodeName(BookArray* headNode, char *bookName)
-{
-    BookArray* posLeftNode= headNode;
-    BookArray* posNode = headNode->next;
-    BookArray* result=NULL;//查找结果
-    result=searchByName(listbook,bookName);
-    //书籍名字是字符串，字符串比较函数
-    while(posNode!=NULL && strcmp(posNode->data.Title,bookName))
-    {
-        posLeftNode=posNode;
-        posNode=posLeftNode->next;
 
-    }
-    //讨论查找结果
-    if(posNode==NULL)
-    {
-        printf("not found\n");
-        return;
-    }
-
-    else
-    {
-        if(result->data.copies!=cop_ies[result->data.id])
-        {
-            printf("Remove unsuccessfully! Because it is on loan!\n");
-            return;
-        }
-        else
-        {
-            printf("Remove book successfully! ");
-            posLeftNode->next = posNode->next;
-            free(posNode);
-            posNode=NULL;
-        }
-    }
-}
-//直接文件操作
-//写操做
-void saveInfoToFile(const char* fileName,BookArray* headNode)
+//file operation
+//write
+void saveInfoToFile(const char* fileName,BookArray* headNode)//store user's infomation on a separate file(username file)
 {
     FILE *fp=fopen(fileName,"w");
     BookArray* pMove = headNode->next;
@@ -337,7 +221,7 @@ void saveInfoToFile(const char* fileName,BookArray* headNode)
     fclose(fp);
 }
 //
-int store_books(FILE *file){
+int store_books(FILE *file){//store book infomation on a separate file(bookinfo1)
     file = fopen("bookinfo1.txt","w");
     BookArray* pMove =listbook->next;
     while(pMove!=NULL)
@@ -348,37 +232,36 @@ int store_books(FILE *file){
     fclose(file);
     return 0;
 }
-//读操作
-void readInfoFromFile(const char* fileName, BookArray* headNode)
+//read
+void readInfoFromFile(const char* fileName, BookArray* headNode)//read user's infomation on a separate file(username file)
 {
-    FILE *fp=fopen(fileName,"r");//第一次打开不存在
+    FILE *fp=fopen(fileName,"r");//if not exist then create
     if(fp==NULL)
-    {//如果不存在就创建
+    {//if open the first time then create
         fp=fopen(fileName,"w+");
     }
     Book tempData;
     while (fscanf(fp,"%d\t%s\t%s\t%d\t%d\n", &tempData.id, tempData.Title, tempData.author, &tempData.year, &tempData.copies)!=EOF)
-    {
-        insertNodeByHead(listbook, tempData);
+    {//insert into the head
+        insertByHead(listbook, tempData);
     }
     fclose(fp);
 }
-int load_books(FILE *file){
-
-    file =fopen("bookinfo1.txt", "r");//第一次打开不存在
+int load_books(FILE *file){//read book infomation on a separate file(bookinfo1)
+    file =fopen("bookinfo1.txt", "r");//if open the first time then create
+    Book tempData;
     if(file==NULL)
-    {//如果不存在就创建
+    {//if not exist then create
         file=fopen("bookinfo1.txt","w+");
     }
-    Book tempData;
     while (fscanf(file,"%d\t%s\t%s\t%d\t%d\n", &tempData.id, tempData.Title, tempData.author, &tempData.year, &tempData.copies)!=EOF)
     {
-        insertNodeByHead(listbook, tempData);
+        insertByHead(listbook, tempData);//insert into the head
     }
     fclose(file);
     return 0;
 }
-void menu()
+void menu()//print out the main menu
 {
     printf("\nPlease choose an option\n");
     printf("1) Register an account\n");
@@ -446,9 +329,7 @@ if not used print Registered library account successfully!*/
     return 1;
 
 }
-
-
-int judge(char *name)
+int judge(char *name)//tell whether has the same name
 {
     struct useraccount *p;
     p = head;
@@ -522,10 +403,8 @@ void librarianview()
     char year[5];
     char copy[10];
     int count=0;
-    Book tempBook;//临时的变量存储书籍信息
-    BookArray* result=NULL;//查找结果
-//	Book tempBook;//临时的变量存储书籍信息
-//	BookArray* result=NULL;//查找结果
+    Book tempBook;//temporary varities to store book infomation
+    BookArray* result=NULL;//reseach result
     char bookname[100];
     char bookauthor[100];
     while (1)
@@ -541,14 +420,9 @@ void librarianview()
         getchar();
         switch (option)
         {
-            case 1:
-//			add();
-
-//			count =  + 1;
-                tempBook.id = countbooklist(listbook);
-
+            case 1://title, author, and year to add
+                tempBook.id = countbooklist(listbook);   //id
                 printf("Enter the Title of the book you wish to add: ");
-////			scanf("%s", tempBook.Title);
                 while (gets(bookname))
                 {
                     if (strlen(bookname) > 10)
@@ -558,8 +432,8 @@ void librarianview()
                     else
                         break;
                 }
-                strcpy(tempBook.Title, bookname);
-                result=searchByName(listbook,tempBook.Title);
+                strcpy(tempBook.Title, bookname);//name
+                result=find_book_by_title(tempBook.Title);
                 if(result==NULL)
                 {
                     printf("Enter the author of the book you wish to add: ");
@@ -573,8 +447,7 @@ void librarianview()
                             break;
                     }
 
-                    strcpy(tempBook.author, bookauthor);
-//	//			scanf("%s", tempBook.author);
+                    strcpy(tempBook.author, bookauthor);//author
                     printf("Enter the year that the book you wish to add was released: ");
                     gets(year);
                     int i;
@@ -587,7 +460,7 @@ void librarianview()
                         }
 
                     }
-                    if(n==4)
+                    if(n==4)//limit the year, only the 4 number is valid
                     {
                         tempBook.year = atoi(year);
                         printf("Enter the number of copies of the book you wish to add:");
@@ -612,13 +485,10 @@ void librarianview()
                         {
                             FILE *book1;
                             tempBook.copies = atoi(copy);
-//						cop_ies[tempBook.id]=tempBook.copies;
                             tempBook.in_copies=tempBook.copies;
-//						insertNodeByHead(listbook,tempBook);
                             if(add_book(tempBook)==0){
                                 if(store_books(book1)==0)
                                 {
-//								saveInfoToFile("bookinfo1.txt",listbook);
                                     printf("Add book successfully!\n");
                                 }
                                 else
@@ -646,7 +516,7 @@ void librarianview()
                 }
                 else
                 {
-                    printf("Enter the number of copies of the book you wish to add:");
+                    printf("Enter the number of copies of the book you wish to add:");//if the mane is the same, just add the copies
                     while (gets(copy))
                     {
                         if (strlen(copy) > 10)
@@ -676,66 +546,45 @@ void librarianview()
                     }
                     else
                     {
-                        printf("Sorry, you attempted to add an invalid book, please try again.\n");
+                        printf("Sorry, you attempted to add an invalid book, please try again.\n");//feedback massages
                     }
                 }
                 break;
             case 2:
-//			deletebook();
                 printf("\n");
-                printf("Enter the Title of the book you wish to remove:");
+                printf("Enter the Title of the book you wish to remove:");// to remove
                 scanf("%s",tempBook.Title);
                 result=searchByName(listbook,tempBook.Title);
 
-                if(result->data.copies!=result->data.in_copies)
+                if(result->data.copies!=result->data.in_copies)//if the book is loaned , cnanot remove. By compare the initial copies with the resent one
                 {
                     printf("Can not Remove! Because it is on loan!\n");
                 }
                 else
                 {
-//				deleteNodeName(listbook, tempBook.Title);
                     FILE *book2;
                     if(remove_book(tempBook)==0){
                         if(store_books(book2)==0)
                         {
-//								saveInfoToFile("bookinfo1.txt",listbook);
-//								printf("Add book successfully!\n");
                             printf("Remove book successfully!\n");
                         }
                         else
                         {
-                            printf("Add book unsuccessfully!\n");
+                            printf("Remove book unsuccessfully!\n");
                         }
-
-//							saveInfoToFile("bookinfo1.txt",listbook);
 
                     }
                     else
                     {
-                        printf("Remove book unsuccessfully! ");
+                        printf("Remove book unsuccessfully! ");//feedback massages
                     }
                 }
-
                 break;
             case 3:
-//			searchbook();
-//			printf("输入查找的书名：");
-//			scanf("%s", tempBook.Title);
-//			result=searchByName(listbook,tempBook.Title);
-//			if(result==NULL)
-//			{
-//				printf("未找到");
-//			}
-//			else
-//			{
-//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
-//			}
                 searchbook();
                 break;
             case 4:
-
-                printList(listbook);
+                displaythebook(listbook);
                 break;
             case 5:
                 end = 1;
@@ -748,22 +597,37 @@ void librarianview()
             break;
     }
 }
-int remove_book(Book data)
+int remove_book(Book book)
 {
-    deleteNodeName(listbook, data.Title);
+    BookArray* postLeftNode= listbook;
+    BookArray* postNode = listbook->next;
+    while(postNode!=NULL && strcmp(postNode->data.Title,book.Title))
+    {
+        postLeftNode=postNode;
+        postNode=postLeftNode->next;
+
+    }
+    if(postNode==NULL)
+        return;
+    else
+    {
+        postLeftNode->next = postNode->next;
+        free(postNode);
+        postNode=NULL;
+    }
     return 0;
 }
-int add_book(Book data)
+int add_book(Book book)
 {
-    insertNodeByHead(listbook, data);
+    BookArray* newNode = createNode(book);
+    newNode->next= listbook->next;
+    listbook->next=newNode;
     return 0;
 }
 
-void cmd()
+void cmd()//the main system
 {
     int option;
-    Book tempBook;//临时的变量存储书籍信息
-    struct BookArray* result=NULL;//查找结果
     scanf("%d", &option);
     getchar();
     switch (option)
@@ -782,23 +646,10 @@ void cmd()
 
             break;
         case 3:
-//			printf("查找书籍\n");
-//			printf("输入查找的书名：");
-//			scanf("%s", tempBook.Title);
-//			result=searchByName(listbook,tempBook.Title);
-//			if(result==NULL)
-//			{
-//				printf("未找到");
-//			}
-//			else
-//			{
-//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
-//			}
             searchbook();
             break;
         case 4:
-            printList(listbook);
+            displaythebook(listbook);
             break;
         case 5:
             printf("Thank you for using the library!\n");
@@ -815,8 +666,8 @@ void searchbook()
 {
     int end =0;
     int j;
-    Book tempBook;//临时的变量存储书籍信息
-    BookArray* result=NULL;//查找结果
+    Book tempBook;//a tempotary varies to store the book
+    BookArray* result=NULL;//result of rearch
     printf("\nPlease choose an option\n");
     printf("1) Find books by Title\n");
     printf("2) Find books by author\n");
@@ -826,77 +677,53 @@ void searchbook()
     int option;
     scanf("%d", &option);
     getchar();
-//	while(1){
-    switch (option)
-    {
-        case 1:
-            printf("Please enter Title：");
-            scanf("%s", tempBook.Title);
-            result=find_book_by_title(tempBook.Title);
-//			result=searchByName(listbook,tempBook.Title);
-            if(result==NULL)
-            {
-                printf("Not found!");
-
-                while (1)
+    while(1){
+        switch (option)
+        {
+            case 1:
+                printf("Please enter Title：");
+                scanf("%s", tempBook.Title);
+                result=find_book_by_title(tempBook.Title);
+                if(result==NULL)
                 {
-                    printf("Input 1 to leave: ");
-                    scanf("%d", &end);
-                    if (end == 1)
-                        break;
+                    printf("Not found!\n");
+
+                    while (1)
+                    {
+                        printf("Input 1 to leave: ");
+                        scanf("%d", &end);
+                        if (end == 1)
+                            break;
+                    }
                 }
-            }
-            else
-            {
-                printf("id\tTitle\tAuthors\tyear\tcopies\n");
-                printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
-            }
-            break;
-        case 2:
-            printf("Please enter author：");
-            scanf("%s", tempBook.author);
-            find_book_by_author(tempBook.author);
-//			result=searchByAthor(listbook,tempBook.author);
-//			if(result==NULL)
-//			{
-//				printf("Not found!");
-//				end=1;
-//			}
-//			else
-//			{
-//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
-//			}
-            break;
-        case 3:
-//			printList1(listbook);
-            printf("Please enter year：");
-            scanf("%i", &tempBook.year);
-            find_book_by_year(tempBook.year);
-//			printList(listbook);
-//			if(result==NULL)
-//			{
-//				printf("Not found!");
-//				end=1;
-//			}
-//			else
-//			{
-//				printf("id\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
-//			}
-            break;
-        case 4:
-            end = 1;
-            break;
-        default:
-            printf("Sorry, the option you entered was invalid, please try again.\n");
+                else
+                {
+                    printf("id\tTitle\tAuthors\tyear\tcopies\n");
+                    printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
+                }
+                break;
+            case 2:
+                printf("Please enter author：");
+                scanf("%s", tempBook.author);
+                find_book_by_author(tempBook.author);
+                break;
+            case 3:
+                printf("Please enter year：");
+                scanf("%i", &tempBook.year);
+                find_book_by_year(tempBook.year);
+                break;
+            case 4:
+                end = 1;
+                break;
+            default:
+                printf("Sorry, the option you entered was invalid, please try again.\n");
+                break;
+        }
+        if (end == 1)
             break;
     }
-//		if (end == 1)
-//				break;
-//	}
 }
-void userfunction(struct useraccount *p)
+void userfunction(struct useraccount *pc)
 {
     int option;
     int end = 0;
@@ -905,13 +732,12 @@ void userfunction(struct useraccount *p)
     BookArray* result2=NULL;//查找结果
     BookArray* user_Name = NULL;
     user_Name= createHead();
-    readInfoFromFile(userName, user_Name);
+    readInfoFromFile(userName, user_Name);//write the infomation into the user's own file
     while (1)
     {
         printf("Please choose an option\n");
         printf("1) Borrow a book\n");
         printf("2) Return a book\n");
-//		printf("3) 已借阅书籍信息\n");
         printf("3) Search for books\n");
         printf("4) Display all books\n");
         printf("5) Log out\n");
@@ -920,10 +746,10 @@ void userfunction(struct useraccount *p)
         switch (option)
         {
             case 1:
-                printf("\n");//存在可以借阅num-1， 不存在借阅失败
+                printf("\n");//if exist the number copies -1, else cannot borrow
                 printf("Enter the name of the book you wish to borrow：");
                 scanf("%s",tempBook.Title);
-                result=searchByName(listbook,tempBook.Title);
+                result=find_book_by_title(tempBook.Title);
                 if(result==NULL)
                 {
                     printf("Do not have this book!");
@@ -936,66 +762,52 @@ void userfunction(struct useraccount *p)
                         if(result->data.copies>0)
                         {
                             result->data.copies--;
-                            saveInfoToFile("bookinfo1.txt",listbook);
-//						saveInfoToFile("bookinfo1.txt",listbook);
+                            saveInfoToFile("bookinfo1.txt",listbook);//record the changes of the copies
                             strcpy(tempBook.author,result->data.author);
                             tempBook.year=result->data.year;
                             tempBook.copies=1;
                             tempBook.id=result->data.id;
-                            insertNodeByHead(user_Name,tempBook);
-                            saveInfoToFile(userName,user_Name);
-                            printf("You have successfully borrowed the book!\n");
+                            insertByHead(user_Name,tempBook);//add the book into the head
+                            saveInfoToFile(userName,user_Name);//save the file
+                            printf("You have successfully borrowed the book!\n");//feedback message to the user when book borroweded is completed.
                         }
                         else
                         {
-                            printf("There is no copy of this book at present!\n");
+                            printf("It is lent out! There is no copy of this book at present!\n");
                         }
                     }
                     else
                     {
-                        printf("Sorry, you already have a copy of this book on loan.\n");
+                        printf("Sorry, you already have a copy of this book on loan.\n"); //users to borrow just one copy of the same book at a time
                     }
                 }
                 break;
             case 2:
-                printf("\n");//当前num+1
-                printList(user_Name);
-                printf("输入归还的书名：");
+                printf("\n");//num+1
+                printf("You have already borrowed these books：\n");//return books from a list of borrowed books
+
+                displaythebook(user_Name);
+                printf("Enter the name of the book you wish to return：");
                 scanf("%s",tempBook.Title);
                 result=searchByName(listbook,tempBook.Title);
                 if(result==NULL)
                 {
-                    printf("来源非法\n");
+                    printf("Do not have this book!\n");
                 }
                 else
                 {
-
-                    result->data.copies++;
-                    saveInfoToFile("bookinfo1.txt",listbook);
-                    deleteNodeByName(user_Name, tempBook.Title);
-                    saveInfoToFile(userName,user_Name);
-                    printf("Return book successfully!\n");
-
+                    result->data.copies++;//record the changes of the copies
+                    saveInfoToFile("bookinfo1.txt",listbook);//save the file
+                    deleteByName(user_Name, tempBook.Title);
+                    saveInfoToFile(userName,user_Name);//save the file
+                    printf("Return book successfully!\n");//feedback message to the user when book returned is completed.
                 }
                 break;
             case 3:
-//			printf("查找书籍\n");
-//			printf("输入查找的书名：");
-//			scanf("%s", tempBook.Title);
-//			result=searchByName(listbook,tempBook.Title);
-//			if(result==NULL)
-//			{
-//				printf("未找到");
-//			}
-//			else
-//			{
-//					printf("id\tTitle\tAuthors\tyear\tcopies\n");
-//				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
-//			}
                 searchbook();
                 break;
             case 4:
-                printList(listbook);
+                displaythebook(listbook);
                 break;
             case 5:
                 end = 1;
@@ -1007,29 +819,6 @@ void userfunction(struct useraccount *p)
             break;
     }
 }
-
-
-void readuserfile()
-{
-    struct useraccount *p;
-    FILE *fp;
-
-    p = head;
-    fp = fopen("users", "ab+");
-    while (fread(p,sizeof(struct useraccount),1,fp))
-    {
-        if (p->next != NULL)
-        {
-            p = (struct useraccount *)malloc(sizeof(struct useraccount));
-
-            end->next = p;
-            end = p;
-            end->next = NULL;
-        }
-    }
-}
-
-
 int main()
 {
     FILE *fp;
@@ -1047,7 +836,20 @@ int main()
 //	usercount1 = fread(head, sizeof(struct useraccount), 1, fp);
     fclose(fp);
     end = head;
-    readuserfile();
+    struct useraccount *p;
+    FILE *fp1;
+    p = head;
+    fp1 = fopen("users", "ab+");
+    while (fread(p,sizeof(struct useraccount),1,fp1))
+    {
+        if (p->next != NULL)
+        {
+            p = (struct useraccount *)malloc(sizeof(struct useraccount));
+            end->next = p;
+            end = p;
+            end->next = NULL;
+        }
+    }
     while (1)
     {
         menu();
