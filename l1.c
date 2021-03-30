@@ -33,9 +33,9 @@ BookArray* listbook = NULL;
 //创建表头：表头就是一个结构体标量
 BookArray* createHead()
 {
-    //动态申请内存
+
     BookArray* headNode = (BookArray*)malloc(sizeof(BookArray));
-    //变量规则 使用前必须初始化
+
     headNode->next=NULL;
     return headNode;
 }
