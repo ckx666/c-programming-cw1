@@ -6,39 +6,14 @@
 #include<stdlib.h>
 #include<math.h>
 #include<ctype.h>
-//#include"book_management.h"
-char userName[100];
-int cop_ies[100];
-typedef struct _Book
+#include"book_management.h"
+BookArray* cre_head()
 {
-    int id;
-    char Title[100];
-//		char *Title; //book Title
-//		char *authors; //comma separated list of authors
-
-    char author[100];
-    int year;
-    int copies;
-    int in_copies;
-}Book;
-
-
-typedef struct _BookArray
-{
-    Book data;
-    struct _BookArray *next;
-    unsigned int length;
-}BookArray;
-BookArray* listbook = NULL;
-//创建表头：表头就是一个结构体标量
-BookArray* createHead()
-{
-
     BookArray* headNode = (BookArray*)malloc(sizeof(BookArray));
-
     headNode->next=NULL;
     return headNode;
 }
+
 BookArray* createNode(Book data)
 {
     BookArray* newNode = (BookArray*)malloc(sizeof(BookArray));
@@ -46,34 +21,6 @@ BookArray* createNode(Book data)
     newNode->next=NULL;
     return newNode;
 }
-struct useraccount        //user
-{
-    int bookcount;
-    char username[30];
-    char userpassword[30];
-    struct useraccount *next;
-};
-
-//char librarianname[10]="librarian";
-//char librarianpassword[10]="librarian";
-char librarianname[10]="1";
-char librarianpassword[10]="1";
-struct useraccount *head = NULL, *end = NULL;
-struct bookstruct  *bookhead = NULL, *bookend = NULL;
-int usercount, bookcount;
-
-int registermenu();
-int loginmenu();
-int Booktotal=0;
-
-void menu();
-void cmd();
-void readuserfile();
-void readbookfile();
-void userfunction(struct useraccount *p);
-void librarianview();
-void writefile(int flag);
-void searchbook();
 void insertByHead(BookArray* headNode, Book data)
 {
     BookArray* newNode = createNode(data);
@@ -109,9 +56,10 @@ BookArray* searchByName(BookArray* headNode, char *bookName)
     }
     return posNode;
 }
-BookArray* find_book_by_title (const char *Title){
+
+BookArray* find_book_by_title (const char *title){
     BookArray* posNode = listbook->next;
-    while(posNode!=NULL && strcmp(posNode->data.Title, Title))
+    while(posNode!=NULL && strcmp(posNode->data.Title, title))
     {
         posNode = posNode->next;
     }
@@ -120,40 +68,67 @@ BookArray* find_book_by_title (const char *Title){
 BookArray*  find_book_by_author (const char *author){
     BookArray* Movepoint = listbook->next;
     int i = 0;
-    printf("id\tTitle\tAuthors\tyear\tcopies\n");
+
+
     while(Movepoint!=NULL)//if one author write many books
     {
+
         if(strcmp(Movepoint->data.author, author)==0)
         {
-
-            printf("%d\t%s\t%s\t%d\t%d\n", Movepoint->data.id, Movepoint->data.Title, Movepoint->data.author,Movepoint->data.year,Movepoint->data.copies);
             i++;
         }
         Movepoint=Movepoint->next;
     }
+    Movepoint = listbook->next;
     if(i==0)
     {
         printf("\nNot found!\n");
+    }
+    else
+    {
+        printf("id\tTitle\tAuthors\tyear\tcopies\n");
+        while(Movepoint!=NULL)//if one author write many books
+        {
+
+            if(strcmp(Movepoint->data.author, author)==0)
+            {
+
+                printf("%d\t%s\t%s\t%d\t%d\n", Movepoint->data.id, Movepoint->data.Title, Movepoint->data.author,Movepoint->data.year,Movepoint->data.copies);
+            }
+            Movepoint=Movepoint->next;
+        }
     }
 }
 BookArray* find_book_by_year (unsigned int year)
 {
     BookArray* Movepoint = listbook->next;
     int i = 0;
-    printf("id\tTitle\tAuthors\tyear\tcopies\n");
+
+
     while(Movepoint!=NULL)
     {
         if(Movepoint->data.year==year)//if many books have the same year
         {
-
-            printf("%d\t%s\t%s\t%d\t%d\n", Movepoint->data.id, Movepoint->data.Title, Movepoint->data.author,Movepoint->data.year,Movepoint->data.copies);
             i++;
         }
         Movepoint=Movepoint->next;
     }
+    Movepoint = listbook->next;
     if(i==0)
     {
         printf("\nNot found!\n");
+    }
+    else{
+        printf("id\tTitle\tAuthors\tyear\tcopies\n");
+        while(Movepoint!=NULL)
+        {
+            if(Movepoint->data.year==year)//if many books have the same year
+            {
+
+                printf("%d\t%s\t%s\t%d\t%d\n", Movepoint->data.id, Movepoint->data.Title, Movepoint->data.author,Movepoint->data.year,Movepoint->data.copies);
+            }
+            Movepoint=Movepoint->next;
+        }
     }
 }
 BookArray* searchByAthor(BookArray* headNode, char *authorName)
@@ -165,7 +140,7 @@ BookArray* searchByAthor(BookArray* headNode, char *authorName)
     }
     return posNode;
 }
-void displaythebook1(BookArray* headNode)
+void displaythebook(BookArray* headNode)
 {
     BookArray* pMove = headNode->next;
     printf("id\tTitle\tAuthors\tyear\tcopies\n");
@@ -175,35 +150,34 @@ void displaythebook1(BookArray* headNode)
         pMove=pMove->next;
     }
 }
-void displaythebook(BookArray *headNode)// arrange the order
-{
-    BookArray* p= headNode->next;
-    BookArray* q = headNode->next;
-    for (p ;p!=NULL;p=p->next)
-    {
-        for (q;q->next!=NULL;q=q->next)
-        {
-            if (q->data.id < q->next->data.id)
-            {
-                //交换值
-                Book tempData=q->data;
-                q->data=q->next->data;
-                q->next->data=tempData;
-            }
-        }
-    }
-    displaythebook1(headNode);
-}
-
+//void displaythebook(BookArray *headNode)// arrange the order
+//{
+//	BookArray* p= headNode->next;
+//	BookArray* q = headNode->next;
+//	for (p ;p!=NULL;p=p->next)
+//	{
+//		for (q;q->next!=NULL;q=q->next)
+//		{
+//			if (q->data.id > q->next->data.id)
+//			{
+//				Book tempData=q->data;
+//				q->data=q->next->data;
+//				q->next->data=tempData;
+//			}
+//		}
+//	}
+//	displaythebook1(headNode);
+// }
 int countbooklist(BookArray* headNode)
 {
+    int Booktotal=0;
     BookArray* pMove = headNode->next;
     while(pMove!=NULL)
     {
         Booktotal++;
         pMove=pMove->next;
     }
-    Booktotal++;
+    Booktotal +=1;
     return Booktotal;
 }
 
@@ -314,7 +288,7 @@ if not used print Registered library account successfully!*/
             break;
     }
     strcpy(pc->userpassword, userpassword);
-    pc->bookcount = 0;
+//		pc->bookcount = 0;
     end->next = pc;
     end = pc;
     end->next = NULL;
@@ -373,7 +347,7 @@ wrong username or password. */
                 printf("Please enter your password again: ");//wrong password
                 scanf("%s", librarianpassword);
             }
-            printf("\n(logged in as: librarian)");
+
             librarianview(pc);/*go to librarian menu*/
             return 1;
         }
@@ -385,7 +359,8 @@ wrong username or password. */
                 printf("Please enter your password again: ");//wrong password
                 scanf("%s", userpassword);
             }
-            printf("\n(logged in as: %s)\n", pc->username);
+
+            strcpy(userName1,pc->username);/*creat the name for userfile*/
             strcpy(userName,pc->username);/*creat the name for userfile*/
             strcat(userName,"");
             strcat(userName,str);
@@ -398,7 +373,7 @@ wrong username or password. */
 
 void librarianview()
 {
-    int option;
+    char option[100];
     int end = 0;
     char year[5];
     char copy[10];
@@ -409,6 +384,7 @@ void librarianview()
     char bookauthor[100];
     while (1)
     {
+        printf("\n(logged in as: librarian)");
         printf("\nPlease choose an option\n");
         printf("1) Add a book\n");
         printf("2) Remove a book\n");
@@ -416,80 +392,90 @@ void librarianview()
         printf("4) Display all books\n");
         printf("5) Log out\n");
         printf(" Option:");
-        scanf("%d", &option);
-        getchar();
-        switch (option)
-        {
-            case 1://title, author, and year to add
-                tempBook.id = countbooklist(listbook);   //id
-                printf("Enter the Title of the book you wish to add: ");
-                while (gets(bookname))
-                {
-                    if (strlen(bookname) > 10)
+
+        scanf("%s", &option);
+        if(strlen(option)>1){
+            printf("Sorry, the option you entered was invalid, please try again.\n");
+        }
+        else{
+            switch (atoi(option))
+            {
+                case 1://title, author, and year to add
+                    tempBook.id = countbooklist(listbook);   //id
+                    printf("Enter the Title of the book you wish to add: ");
+                    while (gets(bookname))
                     {
-                        printf("too long! Enter the Title of the book you wish to add again: ");
-                    }
-                    else
-                        break;
-                }
-                strcpy(tempBook.Title, bookname);//name
-                result=find_book_by_title(tempBook.Title);
-                if(result==NULL)
-                {
-                    printf("Enter the author of the book you wish to add: ");
-                    while (gets(bookauthor))
-                    {
-                        if (strlen(bookauthor) > 10)
+                        if (strlen(bookname) > 10)
                         {
-                            printf("too long! Enter the author of the book you wish to add again: ");
+                            printf("too long! Enter the Title of the book you wish to add again: ");
                         }
                         else
                             break;
                     }
-
-                    strcpy(tempBook.author, bookauthor);//author
-                    printf("Enter the year that the book you wish to add was released: ");
-                    gets(year);
-                    int i;
-                    int n=0;
-                    for(i=0;i<4;i++)
+                    strcpy(tempBook.Title, bookname);//name
+                    result=find_book_by_title(tempBook.Title);
+                    if(result==NULL)
                     {
-                        if(isdigit(year[i]))
+                        printf("Enter the author of the book you wish to add: ");
+                        while (gets(bookauthor))
                         {
-                            n++;
-                        }
-
-                    }
-                    if(n==4)//limit the year, only the 4 number is valid
-                    {
-                        tempBook.year = atoi(year);
-                        printf("Enter the number of copies of the book you wish to add:");
-                        while (gets(copy))
-                        {
-                            if (strlen(copy) > 10)
+                            if (strlen(bookauthor) > 10)
                             {
-                                printf("too much! Enter the number of copies of the book you wish to add again: ");
+                                printf("too long! Enter the author of the book you wish to add again: ");
                             }
                             else
                                 break;
                         }
-                        n=0;
-                        for(i=0;i<10;i++)
+
+                        strcpy(tempBook.author, bookauthor);//author
+                        printf("Enter the year that the book you wish to add was released: ");
+                        gets(year);
+                        int i;
+                        int n=0;
+                        for(i=0;i<4;i++)
                         {
-                            if(isalpha(copy[i]))
+                            if(isdigit(year[i]))
                             {
                                 n++;
                             }
+
                         }
-                        if(n==0)
+                        if(n==4)//limit the year, only the 4 number is valid
                         {
-                            FILE *book1;
-                            tempBook.copies = atoi(copy);
-                            tempBook.in_copies=tempBook.copies;
-                            if(add_book(tempBook)==0){
-                                if(store_books(book1)==0)
+                            tempBook.year = atoi(year);
+                            printf("Enter the number of copies of the book you wish to add:");
+                            while (gets(copy))
+                            {
+                                if (strlen(copy) > 10)
                                 {
-                                    printf("Add book successfully!\n");
+                                    printf("too much! Enter the number of copies of the book you wish to add again: ");
+                                }
+                                else
+                                    break;
+                            }
+                            n=0;
+                            for(i=0;i<10;i++)
+                            {
+                                if(isalpha(copy[i]))
+                                {
+                                    n++;
+                                }
+                            }
+                            if(n==0)
+                            {
+                                FILE *book1;
+                                tempBook.copies = atoi(copy);
+                                tempBook.in_copies=tempBook.copies;
+                                if(add_book(tempBook)==0){
+                                    if(store_books(book1)==0)
+                                    {
+                                        printf("Add book successfully!\n");
+                                    }
+                                    else
+                                    {
+                                        printf("Add book unsuccessfully!\n");
+                                    }
+
                                 }
                                 else
                                 {
@@ -499,102 +485,97 @@ void librarianview()
                             }
                             else
                             {
-                                printf("Add book unsuccessfully!\n");
+                                printf("Sorry, you attempted to add an invalid book, please try again.\n");
                             }
-
                         }
                         else
                         {
                             printf("Sorry, you attempted to add an invalid book, please try again.\n");
                         }
+
                     }
                     else
                     {
-                        printf("Sorry, you attempted to add an invalid book, please try again.\n");
-                    }
-
-                }
-                else
-                {
-                    printf("Enter the number of copies of the book you wish to add:");//if the mane is the same, just add the copies
-                    while (gets(copy))
-                    {
-                        if (strlen(copy) > 10)
+                        printf("Enter the number of copies of the book you wish to add:");//if the mane is the same, just add the copies
+                        while (gets(copy))
                         {
-                            printf("too much! Enter the number of copies of the book you wish to add again: ");
+                            if (strlen(copy) > 10)
+                            {
+                                printf("too much! Enter the number of copies of the book you wish to add again: ");
+                            }
+                            else
+                                break;
                         }
-                        else
-                            break;
-                    }
-                    int n=0;
-                    int i;
-                    for(i=0;i<10;i++)
-                    {
-                        if(isalpha(copy[i]))
+                        int n=0;
+                        int i;
+                        for(i=0;i<10;i++)
                         {
-                            n++;
+                            if(isalpha(copy[i]))
+                            {
+                                n++;
+                            }
                         }
-                    }
-                    if(n==0)
-                    {
-
-                        tempBook.copies = atoi(copy);
-                        result->data.copies+=tempBook.copies;
-                        tempBook.in_copies=tempBook.copies;
-                        saveInfoToFile("bookinfo1.txt",listbook);
-                        printf("Add book successfully!\n");
-                    }
-                    else
-                    {
-                        printf("Sorry, you attempted to add an invalid book, please try again.\n");//feedback massages
-                    }
-                }
-                break;
-            case 2:
-                printf("\n");
-                printf("Enter the Title of the book you wish to remove:");// to remove
-                scanf("%s",tempBook.Title);
-                result=searchByName(listbook,tempBook.Title);
-
-                if(result->data.copies!=result->data.in_copies)//if the book is loaned , cnanot remove. By compare the initial copies with the resent one
-                {
-                    printf("Can not Remove! Because it is on loan!\n");
-                }
-                else
-                {
-                    FILE *book2;
-                    if(remove_book(tempBook)==0){
-                        if(store_books(book2)==0)
+                        if(n==0)
                         {
-                            printf("Remove book successfully!\n");
+
+                            tempBook.copies = atoi(copy);
+                            result->data.copies+=tempBook.copies;
+                            tempBook.in_copies=tempBook.copies;
+                            saveInfoToFile("bookinfo1.txt",listbook);
+                            printf("Add book successfully!\n");
                         }
                         else
                         {
-                            printf("Remove book unsuccessfully!\n");
+                            printf("Sorry, you attempted to add an invalid book, please try again.\n");//feedback massages
                         }
+                    }
+                    break;
+                case 2:
+                    printf("\n");
+                    printf("Enter the Title of the book you wish to remove:");// to remove
+                    scanf("%s",tempBook.Title);
+                    result=searchByName(listbook,tempBook.Title);
 
+                    if(result->data.copies!=result->data.in_copies)//if the book is loaned , cnanot remove. By compare the initial copies with the resent one
+                    {
+                        printf("Can not Remove! Because it is on loan!\n");
                     }
                     else
                     {
-                        printf("Remove book unsuccessfully! ");//feedback massages
+                        FILE *book2;
+                        if(remove_book(tempBook)==0){
+                            if(store_books(book2)==0)
+                            {
+                                printf("Remove book successfully!\n");
+                            }
+                            else
+                            {
+                                printf("Remove book unsuccessfully!\n");
+                            }
+
+                        }
+                        else
+                        {
+                            printf("Remove book unsuccessfully! ");//feedback massages
+                        }
                     }
-                }
-                break;
-            case 3:
-                searchbook();
-                break;
-            case 4:
-                displaythebook(listbook);
-                break;
-            case 5:
-                end = 1;
-                break;
-            default:
-                printf("Sorry, the option you entered was invalid, please try again.\n");
+                    break;
+                case 3:
+                    searchbook();
+                    break;
+                case 4:
+                    displaythebook(listbook);
+                    break;
+                case 5:
+                    end = 1;
+                    break;
+                case 0:
+                    printf("Sorry, the option you entered was invalid, please try again.\n");
+                    break;
+            }
+            if (end == 1)
                 break;
         }
-        if (end == 1)
-            break;
     }
 }
 int remove_book(Book book)
@@ -627,180 +608,25 @@ int add_book(Book book)
 
 void cmd()//the main system
 {
-    int option;
-    scanf("%d", &option);
+    char option[100];
+    scanf("%s", option);
     getchar();
-    switch (option)
-    {
-        case 1:
-            if(registermenu()==1)
-            {
-                printf("Registered library account successfully!\n");
-            }
-            break;
-        case 2:
-            if(loginmenu()!=1)
-            {
-                printf("Username is not existing, please register first!\n");
-            }
-
-            break;
-        case 3:
-            searchbook();
-            break;
-        case 4:
-            displaythebook(listbook);
-            break;
-        case 5:
-            printf("Thank you for using the library!\n");
-            printf("Goodbye!");
-            exit(0);
-            break;
-        default:
-            printf("Sorry, the option you entered was invalid, please try again.\n");
-            break;
+    if(strlen(option)>1){
+        printf("Sorry, the option you entered was invalid, please try again.\n");
     }
-}
-
-void searchbook()
-{
-    int end =0;
-    int j;
-    Book tempBook;//a tempotary varies to store the book
-    BookArray* result=NULL;//result of rearch
-    printf("\nPlease choose an option\n");
-    printf("1) Find books by Title\n");
-    printf("2) Find books by author\n");
-    printf("3) Find books by year\n");
-    printf("4) Return to previous menu\n");
-    printf(" Option: ");
-    int option;
-    scanf("%d", &option);
-    getchar();
-    while(1){
-        switch (option)
+    else{
+        switch (atoi(option))
         {
             case 1:
-                printf("Please enter Title：");
-                scanf("%s", tempBook.Title);
-                result=find_book_by_title(tempBook.Title);
-                if(result==NULL)
+                if(registermenu()==1)
                 {
-                    printf("Not found!\n");
-
-                    while (1)
-                    {
-                        printf("Input 1 to leave: ");
-                        scanf("%d", &end);
-                        if (end == 1)
-                            break;
-                    }
-                }
-                else
-                {
-                    printf("id\tTitle\tAuthors\tyear\tcopies\n");
-                    printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
+                    printf("Registered library account successfully!\n");
                 }
                 break;
             case 2:
-                printf("Please enter author：");
-                scanf("%s", tempBook.author);
-                find_book_by_author(tempBook.author);
-                break;
-            case 3:
-                printf("Please enter year：");
-                scanf("%i", &tempBook.year);
-                find_book_by_year(tempBook.year);
-                break;
-            case 4:
-                end = 1;
-                break;
-            default:
-                printf("Sorry, the option you entered was invalid, please try again.\n");
-                break;
-        }
-        if (end == 1)
-            break;
-    }
-}
-void userfunction(struct useraccount *pc)
-{
-    int option;
-    int end = 0;
-    Book tempBook;//临时的变量存储书籍信息
-    BookArray* result=NULL;//查找结果
-    BookArray* result2=NULL;//查找结果
-    BookArray* user_Name = NULL;
-    user_Name= createHead();
-    readInfoFromFile(userName, user_Name);//write the infomation into the user's own file
-    while (1)
-    {
-        printf("Please choose an option\n");
-        printf("1) Borrow a book\n");
-        printf("2) Return a book\n");
-        printf("3) Search for books\n");
-        printf("4) Display all books\n");
-        printf("5) Log out\n");
-        printf(" Option: ");
-        scanf("%d", &option);
-        switch (option)
-        {
-            case 1:
-                printf("\n");//if exist the number copies -1, else cannot borrow
-                printf("Enter the name of the book you wish to borrow：");
-                scanf("%s",tempBook.Title);
-                result=find_book_by_title(tempBook.Title);
-                if(result==NULL)
+                if(loginmenu()!=1)
                 {
-                    printf("Do not have this book!");
-                }
-                else
-                {
-                    result2=searchByName(user_Name,tempBook.Title);
-                    if(result2==NULL)
-                    {
-                        if(result->data.copies>0)
-                        {
-                            result->data.copies--;
-                            saveInfoToFile("bookinfo1.txt",listbook);//record the changes of the copies
-                            strcpy(tempBook.author,result->data.author);
-                            tempBook.year=result->data.year;
-                            tempBook.copies=1;
-                            tempBook.id=result->data.id;
-                            insertByHead(user_Name,tempBook);//add the book into the head
-                            saveInfoToFile(userName,user_Name);//save the file
-                            printf("You have successfully borrowed the book!\n");//feedback message to the user when book borroweded is completed.
-                        }
-                        else
-                        {
-                            printf("It is lent out! There is no copy of this book at present!\n");
-                        }
-                    }
-                    else
-                    {
-                        printf("Sorry, you already have a copy of this book on loan.\n"); //users to borrow just one copy of the same book at a time
-                    }
-                }
-                break;
-            case 2:
-                printf("\n");//num+1
-                printf("You have already borrowed these books：\n");//return books from a list of borrowed books
-
-                displaythebook(user_Name);
-                printf("Enter the name of the book you wish to return：");
-                scanf("%s",tempBook.Title);
-                result=searchByName(listbook,tempBook.Title);
-                if(result==NULL)
-                {
-                    printf("Do not have this book!\n");
-                }
-                else
-                {
-                    result->data.copies++;//record the changes of the copies
-                    saveInfoToFile("bookinfo1.txt",listbook);//save the file
-                    deleteByName(user_Name, tempBook.Title);
-                    saveInfoToFile(userName,user_Name);//save the file
-                    printf("Return book successfully!\n");//feedback message to the user when book returned is completed.
+                    printf("Username is not existing, please register first!\n");
                 }
                 break;
             case 3:
@@ -810,20 +636,197 @@ void userfunction(struct useraccount *pc)
                 displaythebook(listbook);
                 break;
             case 5:
-                end = 1;
+                printf("Thank you for using the library!\n");
+                printf("Goodbye!");
+                exit(0);
                 break;
-            default:
+            case 0:
                 printf("Sorry, the option you entered was invalid, please try again.\n");
+                break;
         }
-        if (end == 1)
-            break;
+    }
+
+}
+
+void searchbook()
+{
+    int end =0;
+    int j;
+    Book tempBook;//a tempotary varies to store the book
+    BookArray* result=NULL;//result of rearch
+    while(1){
+        printf("\nPlease choose an option\n");
+        printf("1) Find books by Title\n");
+        printf("2) Find books by author\n");
+        printf("3) Find books by year\n");
+        printf("4) Return to previous menu\n");
+        printf(" Option: ");
+        char option[100];
+        scanf("%s", &option);
+        if(strlen(option)>1){
+            printf("Sorry, the option you entered was invalid, please try again.\n");
+        }
+        else{
+            switch (atoi(option))
+            {
+                case 1:
+                    printf("Please enter Title：");
+                    scanf("%s", tempBook.Title);
+                    result=find_book_by_title(tempBook.Title);
+                    if(result==NULL)
+                    {
+                        printf("\nNot found!\n");
+//				end=1;
+//				while (1)
+//				{
+//					printf("Input 1 to leave: ");
+//					scanf("%d", &end);
+//					if (end == 1)
+//						break;
+//				}
+                    }
+                    else
+                    {
+                        printf("id\tTitle\tAuthors\tyear\tcopies\n");
+                        printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
+//				break;
+                    }
+                    break;
+
+                case 2:
+                    printf("Please enter author：");
+                    scanf("%s", tempBook.author);
+                    find_book_by_author(tempBook.author);
+                    break;
+                case 3:
+                    printf("Please enter year：");
+                    scanf("%i", &tempBook.year);
+                    find_book_by_year(tempBook.year);
+                    break;
+
+
+                case 4:
+                    end = 1;
+                    break;
+                case 0:
+                    printf("Sorry, the option you entered was invalid, please try again.\n");
+//			end=1;
+                    break;
+            }
+            if (end == 1)
+                break;
+        }
+
+    }
+}
+void userfunction(struct useraccount *pc)
+{
+    char option[100];
+    int end = 0;
+    Book tempBook;//临时的变量存储书籍信息
+    BookArray* result=NULL;//查找结果
+    BookArray* result2=NULL;//查找结果
+    BookArray* user_Name = NULL;
+    user_Name= cre_head();
+    readInfoFromFile(userName, user_Name);//write the infomation into the user's own file
+    while (1)
+    {
+        printf("\n(logged in as: %s)\n", userName1);
+        printf("Please choose an option\n");
+        printf("1) Borrow a book\n");
+        printf("2) Return a book\n");
+        printf("3) Search for books\n");
+        printf("4) Display all books\n");
+        printf("5) Log out\n");
+        printf(" Option: ");
+
+        scanf("%s", &option);
+        if(strlen(option)>1){
+            printf("Sorry, the option you entered was invalid, please try again.\n");
+        }
+        else{
+            switch (atoi(option))
+            {
+                case 1:
+                    printf("\n");//if exist the number copies -1, else cannot borrow
+                    printf("Enter the name of the book you wish to borrow：");
+                    scanf("%s",tempBook.Title);
+                    result=find_book_by_title(tempBook.Title);
+                    if(result==NULL)
+                    {
+                        printf("Do not have this book!");
+                    }
+                    else
+                    {
+                        result2=searchByName(user_Name,tempBook.Title);
+                        if(result2==NULL)
+                        {
+                            if(result->data.copies>0)
+                            {
+                                result->data.copies--;
+                                saveInfoToFile("bookinfo1.txt",listbook);//record the changes of the copies
+                                strcpy(tempBook.author,result->data.author);
+                                tempBook.year=result->data.year;
+                                tempBook.copies=1;
+                                tempBook.id=result->data.id;
+                                insertByHead(user_Name,tempBook);//add the book into the head
+                                saveInfoToFile(userName,user_Name);//save the file
+                                printf("You have successfully borrowed the book!\n");//feedback message to the user when book borroweded is completed.
+                            }
+                            else
+                            {
+                                printf("It is lent out! There is no copy of this book at present!\n");
+                            }
+                        }
+                        else
+                        {
+                            printf("Sorry, you already have a copy of this book on loan.\n"); //users to borrow just one copy of the same book at a time
+                        }
+                    }
+                    break;
+                case 2:
+                    printf("\n");//num+1
+                    printf("You have already borrowed these books：\n");//return books from a list of borrowed books
+
+                    displaythebook(user_Name);
+                    printf("Enter the name of the book you wish to return：");
+                    scanf("%s",tempBook.Title);
+                    result=searchByName(listbook,tempBook.Title);
+                    if(result==NULL)
+                    {
+                        printf("Do not have this book!\n");
+                    }
+                    else
+                    {
+                        result->data.copies++;//record the changes of the copies
+                        saveInfoToFile("bookinfo1.txt",listbook);//save the file
+                        deleteByName(user_Name, tempBook.Title);
+                        saveInfoToFile(userName,user_Name);//save the file
+                        printf("Return book successfully!\n");//feedback message to the user when book returned is completed.
+                    }
+                    break;
+                case 3:
+                    searchbook();
+                    break;
+                case 4:
+                    displaythebook(listbook);
+                    break;
+                case 5:
+                    end = 1;
+                    break;
+                case 0:
+                    printf("Sorry, the option you entered was invalid, please try again.\n");
+            }
+            if (end == 1)
+                break;
+        }
     }
 }
 int main()
 {
     FILE *fp;
     FILE *book;
-    listbook= createHead();
+    listbook= cre_head();
 //	readInfoFromFile("bookinfo1.txt",listbook);
     if(load_books(book)!=0)
     {
@@ -831,7 +834,6 @@ int main()
     }
     head = (struct useraccount *)malloc(sizeof(struct useraccount));
     end = head;
-    bookend = bookhead;
     fp = fopen("users", "a+");
 //	usercount1 = fread(head, sizeof(struct useraccount), 1, fp);
     fclose(fp);
