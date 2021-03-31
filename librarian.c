@@ -67,7 +67,6 @@ void librarianview()
 		printf("5) Log out\n");
 		printf(" Option:");
 		scanf("%s", option);
-	
 		switch (atoi(option))
 		{
 		case 1://title, author, and year to add

@@ -48,7 +48,6 @@ if not used print Registered library account successfully!*/
 				break;
 		}
 		strcpy(pc->userpassword, userpassword);
-//		pc->bookcount = 0;
 		end->next = pc;
 		end = pc;
 		end->next = NULL;
@@ -129,5 +128,4 @@ wrong username or password. */
 		}
 		pc = pc->next;
 	}
-	return 0;
 }
