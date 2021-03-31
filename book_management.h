@@ -1,4 +1,3 @@
-
 #ifndef BOOK_MANAGEMENT_GUARD__H 
 #define BOOK_MANAGEMENT_GUARD__H
 
@@ -38,6 +37,7 @@ struct useraccount        //user
 BookArray* cre_head();
 BookArray* cre_node(Book data);
 BookArray* bookList = NULL;
+BookArray* user_Name = NULL;
 char librarianname[10]="librarian";
 char librarianpassword[10]="librarian";
 //char librarianname[10]="1";
@@ -66,6 +66,7 @@ void userfunction(struct useraccount *pc);
 void removeByName(BookArray* nodehead, char *bookName);//on the useraccount
 void saveFile(const char* fileName,BookArray* nodehead);//on the useraccount
 void readFile(const char* fileName, BookArray* nodehead);//on the useraccount
+void readuserFile(const char* fileName);//on the useraccount
 ////char librarianname[10]="librarian";
 ////char librarianpassword[10]="librarian";
 //
