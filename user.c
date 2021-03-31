@@ -9,10 +9,10 @@ void userfunction(struct useraccount *pc)
 {
 	char option[100];
 	int end = 0;
- 	Book tempBook;//temp book store 
-	BookArray* result=NULL;//search result 
-	BookArray* result2=NULL;//search result 
-//BookArray* user_Name = NULL;
+ 	Book tempBook;//temp store
+	BookArray* result=NULL;//search result
+	BookArray* result2=NULL;//search result
+	BookArray* user_Name = NULL;
 	user_Name= cre_head();
 	readFile(userName, user_Name);//write the infomation into the user's own file
 	while (1)
@@ -26,10 +26,6 @@ void userfunction(struct useraccount *pc)
 		printf("5) Log out\n");
 		printf(" Option: ");
 		scanf("%s", option);
-			if(strlen(option)>1){	
-			printf("Sorry, the option you entered was invalid, please try again.\n");
-	}
-	else{
 		switch (atoi(option))
 		{
 		case 1:
@@ -72,6 +68,7 @@ void userfunction(struct useraccount *pc)
 		case 2:
 			printf("\n");//num+1 
 			printf("You have already borrowed these books£º\n");//return books from a list of borrowed books 
+
 			displaythebook(user_Name);
 			printf("Enter the name of the book you wish to return£º");	
 			scanf("%s",tempBook.Title);
@@ -82,7 +79,8 @@ void userfunction(struct useraccount *pc)
 			}
 			else
 			{
-				result->data.copies++;//record the changes of the copies
+				result2=find_book_by_title(tempBook.Title);
+				result2->data.copies++;//record the changes of the copies
 				saveFile("bookinfo1.txt",bookList);//save the file
 				removeByName(user_Name, tempBook.Title);
 				saveFile(userName,user_Name);//save the file
@@ -100,10 +98,6 @@ void userfunction(struct useraccount *pc)
 			break;
 		default:
 			printf("Sorry, the option you entered was invalid, please try again.\n");
-	}
-		
-		
-		
 		}
 		if (end == 1)
 			break;
