@@ -129,4 +129,5 @@ wrong username or password. */
 		}
 		pc = pc->next;
 	}
+	return 0;
 }
