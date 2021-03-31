@@ -12,9 +12,9 @@ void userfunction(struct useraccount *pc)
  	Book tempBook;//temp store
 	BookArray* result=NULL;//search result
 	BookArray* result2=NULL;//search result
-	BookArray* user_Name = NULL;
+	user_Name = NULL;
 	user_Name= cre_head();
-	readFile(userName, user_Name);//write the infomation into the user's own file
+	readuserFile(userName);//write the infomation into the user's own file
 	while (1)
 	{
 		printf("\n(logged in as: %s)\n", userName1);

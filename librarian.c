@@ -72,6 +72,7 @@ void librarianview()
 		case 1://title, author, and year to add
 			tempBook.id = countbooklist(bookList);   //id
 			printf("Enter the Title of the book you wish to add: ");
+			getchar(); 
 			while (gets(bookname))
 			{
 				if (strlen(bookname) > 10)

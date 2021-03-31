@@ -105,6 +105,20 @@ void readFile(const char* fileName, BookArray* nodehead)//read user's infomation
 	} 
 	fclose(fp); 
  }
+ void readuserFile(const char* fileName)//read user's infomation on a separate file(username file)
+{
+	FILE *fp=fopen(fileName,"r");//if not exist then create
+	if(fp==NULL)
+	{//if open the first time then create
+		fp=fopen(fileName,"w+");
+	}
+	Book tempData;
+	while (fscanf(fp,"%d\t%s\t%s\t%d\t%d\n", &tempData.id, tempData.Title, tempData.author, &tempData.year, &tempData.copies)!=EOF)
+	{//insert into the head
+		addByName(user_Name, tempData);
+	} 
+	fclose(fp); 
+ }
 int load_books(FILE *file){//read book infomation on a separate file(bookinfo1)
 	file =fopen("bookinfo1.txt", "r");//if open the first time then create
 	Book tempData;
@@ -165,4 +179,3 @@ void cmd()//the main system
 			break;
 		}
 }
-
