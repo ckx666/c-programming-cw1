@@ -17,11 +17,10 @@ void searchbook()
 	printf("3) Find books by year\n");
 	printf("4) Return to previous menu\n");
 	printf(" Option: ");
-	int option;
-	scanf("%d", &option);
-	getchar();
+	char option[100];
+	scanf("%s", option);
 
-	switch (option)
+	switch (atoi(option))
 	{
 		case 1:
 			printf("Please enter Title£º");
@@ -30,20 +29,11 @@ void searchbook()
 			if(result==NULL)
 			{
 				printf("\nNot found!\n");
-//				end=1;
-//				while (1)
-//				{
-//					printf("Input 1 to leave: ");
-//					scanf("%d", &end);
-//					if (end == 1)
-//						break;
-//				}
 			}
 			else
 			{
 				printf("id\tTitle\tAuthors\tyear\tcopies\n");
 				printf("%d\t%s\t%s\t%d\t%d\n", result->data.id, result->data.Title, result->data.author, result->data.year, result->data.copies);
-//				break;
 			}
 			break;
 
@@ -57,14 +47,11 @@ void searchbook()
 			scanf("%i", &tempBook.year);	
 			find_book_by_year(tempBook.year);
 			break;
-			
-			
 		case 4:
 			end = 1;
 			break;
 		default:
 			printf("Sorry, the option you entered was invalid, please try again.\n");
-//			end=1;
 			break;
 		}
 		if (end == 1)

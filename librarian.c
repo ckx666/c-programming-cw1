@@ -47,7 +47,7 @@ int countbooklist(BookArray* nodehead)
  } 
 void librarianview()
 {
-	int option;
+	char option[100];
 	int end = 0;
 	char year[5];
 	char copy[10];
@@ -66,9 +66,9 @@ void librarianview()
 		printf("4) Display all books\n");
 		printf("5) Log out\n");
 		printf(" Option:");
-		scanf("%d", &option);
-		getchar();
-		switch (option)
+		scanf("%s", option);
+	
+		switch (atoi(option))
 		{
 		case 1://title, author, and year to add
 			tempBook.id = countbooklist(bookList);   //id
